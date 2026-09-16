@@ -11,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.pridesys.ticketing.entity.UserRecord;
+import com.pridesys.ticketing.entity.UserEntity;
 import com.pridesys.ticketing.entity.UserRole;
 
 @Service
@@ -28,6 +29,12 @@ public class JwtService {
     public String issue(UserRecord user) {
         Date now = new Date();
         return Jwts.builder().subject(Long.toString(user.id())).claim("email", user.email()).claim("role", user.role().name())
+                .issuedAt(now).expiration(new Date(now.getTime() + lifetime.toMillis())).signWith(key).compact();
+    }
+
+    public String issue(UserEntity user) {
+        Date now = new Date();
+        return Jwts.builder().subject(Long.toString(user.getId())).claim("email", user.getEmail()).claim("role", user.getRole().name())
                 .issuedAt(now).expiration(new Date(now.getTime() + lifetime.toMillis())).signWith(key).compact();
     }
 

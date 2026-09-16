@@ -1,8 +1,12 @@
 package com.pridesys.ticketing.entity;
 
-import jakarta.persistence.*; import lombok.Getter; import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Getter @Setter @Entity
+@Getter
+@Setter
+@Entity
 @Table(name = "modules", uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "name"}))
 public class ModuleEntity {
     @Id

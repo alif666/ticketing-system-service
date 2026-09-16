@@ -1,37 +1,3 @@
 package com.pridesys.ticketing.users.service;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import com.pridesys.ticketing.entity.UserRecord;
-import com.pridesys.ticketing.entity.UserRole;
-import com.pridesys.ticketing.repository.UserRecordRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.access.AccessDeniedException;
-
-@ExtendWith(MockitoExtension.class)
-class UsersProjectsServiceTest {
-    @Mock UserRecordRepository users;
-
-    @Test
-    void clientAdminCannotCreateAppAdmin() {
-        var service = new UserManagementService(users);
-        var actor = new UserRecord(2, "admin@client.test", "hash", UserRole.CLIENT_ADMIN, "Admin", null, null, null, true);
-        assertThrows(AccessDeniedException.class, () -> service.create(actor, new UserManagementService.CreateUser("x@test.com", "X", UserRole.APP_ADMIN, 1L)));
-        verifyNoInteractions(users);
-    }
-
-    @Test
-    void clientAdminCannotManageDifferentClientUser() {
-        var service = new UserManagementService(users);
-        var actor = new UserRecord(2, "admin@client.test", "hash", UserRole.CLIENT_ADMIN, "Admin", null, null, null, true);
-        when(users.findById(9L)).thenReturn(java.util.Optional.of(new UserRecord(9, "other@test.com", "hash", UserRole.CLIENT_USER, "Other", null, null, null, true)));
-        when(users.clientId(2L)).thenReturn(java.util.Optional.of(1L));
-        when(users.clientId(9L)).thenReturn(java.util.Optional.of(2L));
-        assertThrows(AccessDeniedException.class, () -> service.deactivate(actor, 9L));
-    }
-}
+import static org.junit.jupiter.api.Assertions.assertThrows;import static org.mockito.Mockito.*;import java.util.*;import org.junit.jupiter.api.Test;import org.junit.jupiter.api.extension.ExtendWith;import org.mockito.*;import org.mockito.junit.jupiter.MockitoExtension;import org.springframework.security.access.AccessDeniedException;import org.springframework.security.crypto.password.PasswordEncoder;import com.pridesys.ticketing.entity.*;import com.pridesys.ticketing.repository.UserRepository;
+@ExtendWith(MockitoExtension.class) class UsersProjectsServiceTest {@Mock UserRepository users;@Mock PasswordEncoder encoder;@Test void clientAdminCannotCreateAppAdmin(){var s=new UserManagementService(users,encoder);var a=user(UserRole.CLIENT_ADMIN,1L);assertThrows(AccessDeniedException.class,()->s.create(a,new UserManagementService.CreateUser("x@test.com","X",UserRole.APP_ADMIN,1L)));verifyNoInteractions(users);}@Test void clientAdminCannotManageOtherClient(){var s=new UserManagementService(users,encoder);var a=user(UserRole.CLIENT_ADMIN,1L);var target=user(UserRole.CLIENT_USER,2L);when(users.findById(9L)).thenReturn(Optional.of(target));assertThrows(AccessDeniedException.class,()->s.deactivate(a,9L));}private UserEntity user(UserRole role,Long client){var u=new UserEntity("u@test.com","hash",role,"User",client);return u;}}

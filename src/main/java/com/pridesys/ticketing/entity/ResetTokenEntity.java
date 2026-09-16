@@ -1,3 +1,32 @@
 package com.pridesys.ticketing.entity;
-import jakarta.persistence.*; import java.time.Instant; import lombok.*;
-@Getter @Setter @NoArgsConstructor @Entity @Table(name="password_reset_tokens") public class ResetTokenEntity { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id; @Column(name="user_id",nullable=false) long userId; @Column(name="token_hash",nullable=false,unique=true,length=64) String tokenHash; @Column(name="expires_at",nullable=false) Instant expiresAt; @Column(name="used_at") Instant usedAt; public ResetTokenEntity(long u,String h,Instant e){userId=u;tokenHash=h;expiresAt=e;} }
+
+import jakarta.persistence.*;
+
+import java.time.Instant;
+
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "password_reset_tokens")
+public class ResetTokenEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Column(name = "user_id", nullable = false)
+    long userId;
+    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
+    String tokenHash;
+    @Column(name = "expires_at", nullable = false)
+    Instant expiresAt;
+    @Column(name = "used_at")
+    Instant usedAt;
+
+    public ResetTokenEntity(long u, String h, Instant e) {
+        userId = u;
+        tokenHash = h;
+        expiresAt = e;
+    }
+}

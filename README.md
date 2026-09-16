@@ -41,8 +41,7 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 ## Architecture decisions
 
 - Spring Boot 3.5.x, Java 21, Maven, and REST endpoints.
-- Spring Data JPA repositories are the canonical persistence interfaces (`UserRepository`, `ClientRepository`, `ProjectRepository`, `ModuleRepository`, and `ProjectMembershipRepository`). Record-mapping facades are explicitly named `*RecordRepository`; no `*JpaRepository` naming is used.
-- Password reset persistence also uses `ResetTokenRepository extends JpaRepository`; `ResetTokenRecordRepository` preserves the auth service's immutable token contract.
+- Spring Data JPA repositories are the only domain persistence interfaces (`UserRepository`, `ClientRepository`, `ProjectRepository`, `ModuleRepository`, `ProjectMembershipRepository`, and `ResetTokenRepository`). Services map entities to response DTOs; no record-repository or `*JpaRepository` compatibility layer remains.
 - MySQL is the relational store selected for the assignment.
 - Flyway owns schema migrations from the beginning.
 - `/app/storage` is a private filesystem volume behind a storage abstraction that will be introduced with the attachment feature. It is not exposed as a public web directory.
