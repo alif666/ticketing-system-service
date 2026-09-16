@@ -46,6 +46,12 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 - `/app/storage` is a private filesystem volume behind a storage abstraction that will be introduced with the attachment feature. It is not exposed as a public web directory.
 - Ticket-domain features are deliberately deferred to later incremental branches.
 
+## Users, clients, projects and modules
+
+The `3-users-projects` increment adds protected `/api/users`, `/api/clients`, `/api/projects`, and nested `/api/projects/{id}/modules` endpoints. APP_ADMIN manages clients/projects/memberships and all users. CLIENT_ADMIN can manage users in its own client (except APP_ADMIN) and modules in assigned projects. CLIENT_USER is read-only for this administration area. Projects are visible to client roles only through `project_memberships`. Use the seeded APP_ADMIN account to create a project, add the seeded client users as members, and then verify scoped access with the client login. Flyway migration `V3__users_projects.sql` creates the client, membership, project, and module tables and associates the seeded client users with Acme Corporation.
+
+The cumulative `postman.json` collection contains requests for the new endpoints. Create a project as APP_ADMIN, add a member using `PUT /api/projects/{projectId}/members/{userId}`, then log in as that member before listing projects/modules.
+
 ## Authentication foundation test suite
 
 Run the regression suite with:

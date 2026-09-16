@@ -106,6 +106,16 @@
           "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('returns HTTP 401', function () { pm.response.to.have.status(401); });"] } }]
         }
       ]
+    },
+    {
+      "name": "Users, clients, projects and modules",
+      "item": [
+        { "name": "List projects", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api","projects"] } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });"] } }] },
+        { "name": "List users (admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/users?page=0&size=20", "host": ["{{baseUrl}}"], "path": ["api","users"], "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }] } }, "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });"] } }] },
+        { "name": "List clients (app admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/clients", "host": ["{{baseUrl}}"], "path": ["api","clients"] } } },
+        { "name": "Create project (app admin)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Customer Portal\",\n  \"shortCode\": \"PORTAL\",\n  \"description\": \"Customer support portal\"\n}" }, "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api","projects"] } } },
+        { "name": "List project modules", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/projects/1/modules", "host": ["{{baseUrl}}"], "path": ["api","projects","1","modules"] } } }
+      ]
     }
   ]
 }
