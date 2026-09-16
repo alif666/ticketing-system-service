@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.pridesys.ticketing.dto.AuthDtos;
+import com.pridesys.ticketing.dto.*;
 import com.pridesys.ticketing.auth.service.AuthService;
 import com.pridesys.ticketing.security.util.JwtService;
 
@@ -18,35 +18,35 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public AuthDtos.LoginResponse login(@Valid @RequestBody AuthDtos.LoginRequest req) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest req) {
         return auth.login(req.email(), req.password());
     }
 
     @PostMapping("/auth/forgot-password")
-    public AuthDtos.MessageResponse forgot(@Valid @RequestBody AuthDtos.ForgotPasswordRequest req) {
-        return new AuthDtos.MessageResponse(auth.requestReset(req.email()));
+    public MessageResponse forgot(@Valid @RequestBody ForgotPasswordRequest req) {
+        return new MessageResponse(auth.requestReset(req.email()));
     }
 
     @PostMapping("/auth/reset-password")
-    public AuthDtos.MessageResponse reset(@Valid @RequestBody AuthDtos.ResetPasswordRequest req) {
+    public MessageResponse reset(@Valid @RequestBody ResetPasswordRequest req) {
         auth.resetPassword(req.token(), req.newPassword());
-        return new AuthDtos.MessageResponse("Password reset successfully");
+        return new MessageResponse("Password reset successfully");
     }
 
     @GetMapping("/me")
-    public AuthDtos.ProfileResponse me(Authentication authentication) {
+    public ProfileResponse me(Authentication authentication) {
         return auth.profile(principal(authentication).id());
     }
 
     @PatchMapping("/me")
-    public AuthDtos.ProfileResponse update(Authentication authentication, @Valid @RequestBody AuthDtos.UpdateProfileRequest req) {
+    public ProfileResponse update(Authentication authentication, @Valid @RequestBody UpdateProfileRequest req) {
         return auth.updateProfile(principal(authentication).id(), req);
     }
 
     @PostMapping("/me/change-password")
-    public AuthDtos.MessageResponse change(Authentication authentication, @Valid @RequestBody AuthDtos.ChangePasswordRequest req) {
+    public MessageResponse change(Authentication authentication, @Valid @RequestBody ChangePasswordRequest req) {
         auth.changePassword(principal(authentication).id(), req.currentPassword(), req.newPassword());
-        return new AuthDtos.MessageResponse("Password changed successfully");
+        return new MessageResponse("Password changed successfully");
     }
 
     private JwtService.UserPrincipal principal(Authentication authentication) {
