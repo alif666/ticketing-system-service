@@ -25,6 +25,7 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/ticketing?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USERNAME: ticketing
       DB_PASSWORD: ticketing
+      APP_STORAGE_ROOT: /app/storage
     depends_on:
       mysql:
         condition: service_healthy
