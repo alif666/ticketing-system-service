@@ -1,8 +1,8 @@
 package com.pridesys.ticketing.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; import lombok.Getter; import lombok.Setter;
 
-@Entity
+@Getter @Setter @Entity
 @Table(name = "clients")
 public class ClientEntity {
     @Id
