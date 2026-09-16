@@ -10,14 +10,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.UserRecordRepository;
 import com.pridesys.ticketing.security.util.JwtService;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwt;
-    private final UserRepository users;
+    private final UserRecordRepository users;
 
-    public JwtAuthenticationFilter(JwtService jwt, UserRepository users) { this.jwt = jwt; this.users = users; }
+    public JwtAuthenticationFilter(JwtService jwt, UserRecordRepository users) { this.jwt = jwt; this.users = users; }
 
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");

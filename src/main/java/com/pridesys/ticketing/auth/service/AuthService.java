@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pridesys.ticketing.dto.AuthDtos;
 import com.pridesys.ticketing.entity.UserRecord;
 import com.pridesys.ticketing.repository.ResetTokenRepository;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.UserRecordRepository;
 import com.pridesys.ticketing.security.util.JwtService;
 
 @Service
 public class AuthService {
-    private final UserRepository users; private final ResetTokenRepository tokens; private final PasswordEncoder encoder; private final JwtService jwt;
+    private final UserRecordRepository users; private final ResetTokenRepository tokens; private final PasswordEncoder encoder; private final JwtService jwt;
     private final SecureRandom random = new SecureRandom();
 
-    public AuthService(UserRepository users, ResetTokenRepository tokens, PasswordEncoder encoder, JwtService jwt) { this.users=users; this.tokens=tokens; this.encoder=encoder; this.jwt=jwt; }
+    public AuthService(UserRecordRepository users, ResetTokenRepository tokens, PasswordEncoder encoder, JwtService jwt) { this.users=users; this.tokens=tokens; this.encoder=encoder; this.jwt=jwt; }
 
     public AuthDtos.LoginResponse login(String email, String password) {
         UserRecord user = users.findByEmail(email).filter(UserRecord::active).orElseThrow(() -> new BadCredentialsException("Invalid email or password"));

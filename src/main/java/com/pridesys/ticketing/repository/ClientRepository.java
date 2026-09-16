@@ -1,5 +1,1 @@
-package com.pridesys.ticketing.repository;
-import com.pridesys.ticketing.dto.UsersProjectsDtos; import com.pridesys.ticketing.entity.ClientRecord; import java.sql.*; import java.util.*; import org.springframework.jdbc.core.JdbcTemplate; import org.springframework.stereotype.Repository;
-@Repository public class ClientRepository { private final JdbcTemplate jdbc; public ClientRepository(JdbcTemplate jdbc){this.jdbc=jdbc;}
- public List<ClientRecord> findAll(){return jdbc.query("SELECT id,name,active FROM clients ORDER BY name",this::map);} public long create(UsersProjectsDtos.CreateClientRequest r){var h=new org.springframework.jdbc.support.GeneratedKeyHolder();jdbc.update(c->{var p=c.prepareStatement("INSERT INTO clients(name) VALUES (?)",Statement.RETURN_GENERATED_KEYS);p.setString(1,r.name().trim());return p;},h);return h.getKey().longValue();}
- private ClientRecord map(ResultSet r,int n)throws SQLException{return new ClientRecord(r.getLong("id"),r.getString("name"),r.getBoolean("active"));}}
+package com.pridesys.ticketing.repository; import com.pridesys.ticketing.entity.*; import org.springframework.data.jpa.repository.JpaRepository; public interface ClientRepository extends JpaRepository<ClientEntity,Long>{}

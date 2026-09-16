@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.UserRecordRepository;
 import com.pridesys.ticketing.security.util.JwtService;
 import com.pridesys.ticketing.security.filter.JwtAuthenticationFilter;
 
@@ -20,7 +20,7 @@ import com.pridesys.ticketing.security.filter.JwtAuthenticationFilter;
 public class SecurityConfig {
     @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
-    @Bean SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwt, UserRepository users) throws Exception {
+    @Bean SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwt, UserRecordRepository users) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         return http.csrf(csrf -> csrf.disable()).cors(cors -> {})
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

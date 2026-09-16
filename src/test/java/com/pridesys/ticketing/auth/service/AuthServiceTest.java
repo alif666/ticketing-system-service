@@ -17,12 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.pridesys.ticketing.entity.UserRecord;
 import com.pridesys.ticketing.entity.UserRole;
 import com.pridesys.ticketing.repository.ResetTokenRepository;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.UserRecordRepository;
 import com.pridesys.ticketing.security.util.JwtService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
-    @Mock UserRepository users;
+    @Mock UserRecordRepository users;
     @Mock ResetTokenRepository tokens;
     @Mock PasswordEncoder encoder;
     @Mock JwtService jwt;

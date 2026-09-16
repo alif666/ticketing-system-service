@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.pridesys.ticketing.entity.UserRecord;
 import com.pridesys.ticketing.entity.UserRole;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.UserRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -15,7 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 @ExtendWith(MockitoExtension.class)
 class UsersProjectsServiceTest {
-    @Mock UserRepository users;
+    @Mock UserRecordRepository users;
 
     @Test
     void clientAdminCannotCreateAppAdmin() {
