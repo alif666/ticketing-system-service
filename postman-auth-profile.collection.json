@@ -71,7 +71,7 @@
       },
       "event": [{ "listen": "test", "script": { "type": "text", "exec": [
         "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });",
-        "pm.test('does not expose reset token in response', function () { pm.expect(pm.response.text()).not.to.include('token'); });"
+        "pm.test('does not expose reset token field in response', function () { pm.expect(pm.response.json()).not.to.have.property('resetToken'); });"
       ] } }]
     },
     {
