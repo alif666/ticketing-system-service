@@ -20,7 +20,8 @@ public class JwtService {
 
     public JwtService(@Value("${app.security.jwt-secret:change-this-development-secret-to-at-least-32-chars}") String secret,
                       @Value("${app.security.jwt-lifetime:PT2H}") Duration lifetime) {
-        if (secret.getBytes(StandardCharsets.UTF_8).length < 32) throw new IllegalArgumentException("JWT secret must be at least 32 bytes");
+        if (secret.getBytes(StandardCharsets.UTF_8).length < 32)
+            throw new IllegalArgumentException("JWT secret must be at least 32 bytes");
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.lifetime = lifetime;
     }
@@ -36,5 +37,6 @@ public class JwtService {
         return new UserPrincipal(Long.parseLong(claims.getSubject()), claims.get("email", String.class), UserRole.valueOf(claims.get("role", String.class)));
     }
 
-    public record UserPrincipal(long id, String email, UserRole role) {}
+    public record UserPrincipal(long id, String email, UserRole role) {
+    }
 }

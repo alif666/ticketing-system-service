@@ -1,2 +1,15 @@
-package com.pridesys.ticketing.repository; import com.pridesys.ticketing.entity.*; import org.springframework.data.jpa.repository.*; import java.time.Instant; import java.util.*;
-public interface ResetTokenRepository extends JpaRepository<ResetTokenEntity,Long> { @Modifying @Query("update ResetTokenEntity t set t.usedAt=:now where t.userId=:user and t.usedAt is null") void invalidateOutstanding(@org.springframework.data.repository.query.Param("user")long user,@org.springframework.data.repository.query.Param("now")Instant now); Optional<ResetTokenEntity> findByTokenHash(String hash); }
+package com.pridesys.ticketing.repository;
+
+import com.pridesys.ticketing.entity.*;
+import org.springframework.data.jpa.repository.*;
+
+import java.time.Instant;
+import java.util.*;
+
+public interface ResetTokenRepository extends JpaRepository<ResetTokenEntity, Long> {
+    @Modifying
+    @Query("update ResetTokenEntity t set t.usedAt=:now where t.userId=:user and t.usedAt is null")
+    void invalidateOutstanding(@org.springframework.data.repository.query.Param("user") long user, @org.springframework.data.repository.query.Param("now") Instant now);
+
+    Optional<ResetTokenEntity> findByTokenHash(String hash);
+}

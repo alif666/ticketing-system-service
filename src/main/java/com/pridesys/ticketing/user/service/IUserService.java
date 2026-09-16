@@ -1,1 +1,14 @@
-package com.pridesys.ticketing.user.service; import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.UserEntity; public interface IUserService {PageResponse<AuthDtos.ProfileResponse> list(UserEntity actor,String q,int page,int size);AuthDtos.ProfileResponse create(UserEntity actor,com.pridesys.ticketing.user.service.impl.UserServiceImpl.CreateUser request);void deactivate(UserEntity actor,long id);AuthDtos.ProfileResponse update(UserEntity actor,long id,UsersProjectsDtos.UpdateUserRequest request);}
+package com.pridesys.ticketing.user.service;
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.UserEntity;
+
+public interface IUserService {
+    PageResponse<ProfileResponse> list(UserEntity actor, String q, int page, int size);
+
+    ProfileResponse create(UserEntity actor, CreateUserRequest request);
+
+    void deactivate(UserEntity actor, long id);
+
+    ProfileResponse update(UserEntity actor, long id, UpdateUserRequest request);
+}

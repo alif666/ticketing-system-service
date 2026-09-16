@@ -1,3 +1,47 @@
 package com.pridesys.ticketing.config;
-import org.springframework.beans.factory.annotation.Value;import org.springframework.boot.CommandLineRunner;import org.springframework.security.crypto.password.PasswordEncoder;import org.springframework.stereotype.Component;import org.springframework.transaction.annotation.Transactional;import com.pridesys.ticketing.entity.*;import com.pridesys.ticketing.repository.*;
-@Component public class LocalSeedData implements CommandLineRunner{private final UserRepository users;private final ClientRepository clients;private final PasswordEncoder encoder;private final boolean enabled;public LocalSeedData(UserRepository u,ClientRepository c,PasswordEncoder e,@Value("${app.seed.enabled:true}")boolean en){users=u;clients=c;encoder=e;enabled=en;}@Override @Transactional public void run(String...args){if(!enabled)return;var acme=clients.findByName("Acme Corporation").orElseGet(()->clients.save(new ClientEntity("Acme Corporation")));seed("app.admin@example.com",UserRole.APP_ADMIN,"Application Admin","01700000001","Company Administrator",null);seed("client.admin@example.com",UserRole.CLIENT_ADMIN,"Client Administrator","01700000002","Client Administrator",acme.getId());seed("client.user@example.com",UserRole.CLIENT_USER,"Client User","01700000003","Support User",acme.getId());}private void seed(String email,UserRole role,String name,String mobile,String designation,Long client){var u=users.findByEmailIgnoreCase(email).orElseGet(()->new UserEntity(email,encoder.encode("Password123!"),role,name,client));u.setPasswordHash(encoder.encode("Password123!"));u.setRole(role);u.setName(name);u.setMobile(mobile);u.setDesignation(designation);u.setOffice("Dhaka");u.setActive(true);u.setClientId(client);users.save(u);}}
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.*;
+
+@Component
+public class LocalSeedData implements CommandLineRunner {
+    private final UserRepository users;
+    private final ClientRepository clients;
+    private final PasswordEncoder encoder;
+    private final boolean enabled;
+
+    public LocalSeedData(UserRepository u, ClientRepository c, PasswordEncoder e, @Value("${app.seed.enabled:true}") boolean en) {
+        users = u;
+        clients = c;
+        encoder = e;
+        enabled = en;
+    }
+
+    @Override
+    @Transactional
+    public void run(String... args) {
+        if (!enabled) return;
+        var acme = clients.findByName("Acme Corporation").orElseGet(() -> clients.save(new ClientEntity("Acme Corporation")));
+        seed("app.admin@example.com", UserRole.APP_ADMIN, "Application Admin", "01700000001", "Company Administrator", null);
+        seed("client.admin@example.com", UserRole.CLIENT_ADMIN, "Client Administrator", "01700000002", "Client Administrator", acme.getId());
+        seed("client.user@example.com", UserRole.CLIENT_USER, "Client User", "01700000003", "Support User", acme.getId());
+    }
+
+    private void seed(String email, UserRole role, String name, String mobile, String designation, Long client) {
+        var u = users.findByEmailIgnoreCase(email).orElseGet(() -> new UserEntity(email, encoder.encode("Password123!"), role, name, client));
+        u.setPasswordHash(encoder.encode("Password123!"));
+        u.setRole(role);
+        u.setName(name);
+        u.setMobile(mobile);
+        u.setDesignation(designation);
+        u.setOffice("Dhaka");
+        u.setActive(true);
+        u.setClientId(client);
+        users.save(u);
+    }
+}

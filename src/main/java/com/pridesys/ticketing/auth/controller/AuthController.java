@@ -1,7 +1,6 @@
 package com.pridesys.ticketing.auth.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.pridesys.ticketing.dto.*;

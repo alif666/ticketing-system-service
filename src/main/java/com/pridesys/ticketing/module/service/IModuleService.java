@@ -1,1 +1,14 @@
-package com.pridesys.ticketing.module.service; import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.UserEntity; public interface IModuleService {PageResponse<ModuleResponseDto> list(UserEntity actor,long projectId,int page,int size);ModuleResponseDto create(UserEntity actor,long projectId,UsersProjectsDtos.CreateModuleRequest request);void update(UserEntity actor,long projectId,long id,UsersProjectsDtos.UpdateModuleRequest request);void delete(UserEntity actor,long projectId,long id);}
+package com.pridesys.ticketing.module.service;
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.UserEntity;
+
+public interface IModuleService {
+    PageResponse<ModuleResponseDto> list(UserEntity actor, long projectId, int page, int size);
+
+    ModuleResponseDto create(UserEntity actor, long projectId, CreateModuleRequest request);
+
+    void update(UserEntity actor, long projectId, long id, UpdateModuleRequest request);
+
+    void delete(UserEntity actor, long projectId, long id);
+}

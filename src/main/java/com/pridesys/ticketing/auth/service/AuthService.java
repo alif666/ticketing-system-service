@@ -1,3 +1,101 @@
 package com.pridesys.ticketing.auth.service;
-import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.*; import com.pridesys.ticketing.repository.*; import com.pridesys.ticketing.security.util.JwtService; import org.springframework.security.authentication.BadCredentialsException; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional; import java.nio.charset.StandardCharsets; import java.security.*; import java.time.*; import java.util.*;
-@Service public class AuthService { private final UserRepository users; private final ResetTokenRepository tokens; private final PasswordEncoder encoder; private final JwtService jwt; private final SecureRandom random=new SecureRandom(); public AuthService(UserRepository u,ResetTokenRepository t,PasswordEncoder e,JwtService j){users=u;tokens=t;encoder=e;jwt=j;} public LoginResponse login(String email,String password){UserEntity u=users.findByEmailIgnoreCase(email.trim()).filter(UserEntity::isActive).orElseThrow(()->new BadCredentialsException("Invalid email or password"));if(!encoder.matches(password,u.getPasswordHash()))throw new BadCredentialsException("Invalid email or password");return new LoginResponse(jwt.issue(u),profile(u));} @Transactional public String requestReset(String email){users.findByEmailIgnoreCase(email.trim()).filter(UserEntity::isActive).ifPresent(u->{Instant n=Instant.now();String raw=randomToken();tokens.invalidateOutstanding(u.getId(),n);tokens.save(new ResetTokenEntity(u.getId(),hash(raw),n.plus(Duration.ofMinutes(15))));System.out.println("[DEV PASSWORD RESET] email="+u.getEmail()+" token="+raw);});return "If an active account exists, a password reset token has been issued.";} @Transactional public void resetPassword(String raw,String next){var t=tokens.findByTokenHash(hash(raw)).filter(x->x.getUsedAt()==null&&x.getExpiresAt().isAfter(Instant.now())).orElseThrow(()->new BadCredentialsException("Invalid or expired reset token"));var u=users.findById(t.getUserId()).orElseThrow();u.setPasswordHash(encoder.encode(next));users.save(u);t.setUsedAt(Instant.now());tokens.save(t);} @Transactional public void changePassword(long id,String current,String next){var u=users.findById(id).orElseThrow();if(!encoder.matches(current,u.getPasswordHash()))throw new BadCredentialsException("Current password is incorrect");u.setPasswordHash(encoder.encode(next));users.save(u);} public ProfileResponse profile(long id){return profile(users.findById(id).orElseThrow());} @Transactional public ProfileResponse updateProfile(long id,UpdateProfileRequest r){var u=users.findById(id).orElseThrow();u.setName(r.name().trim());u.setMobile(r.mobile());u.setDesignation(r.designation());u.setOffice(r.office());return profile(users.save(u));} public ProfileResponse profile(UserEntity u){return new ProfileResponse(u.getId(),u.getEmail(),u.getRole().name(),u.getName(),u.getMobile(),u.getDesignation(),u.getOffice(),u.isActive());} private String randomToken(){byte[] b=new byte[32];random.nextBytes(b);return Base64.getUrlEncoder().withoutPadding().encodeToString(b);} private String hash(String v){try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(v.getBytes(StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException(e);}} }
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.*;
+import com.pridesys.ticketing.security.util.JwtService;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.time.*;
+import java.util.*;
+
+@Service
+public class AuthService {
+    private final UserRepository users;
+    private final ResetTokenRepository tokens;
+    private final PasswordEncoder encoder;
+    private final JwtService jwt;
+    private final SecureRandom random = new SecureRandom();
+
+    public AuthService(UserRepository u, ResetTokenRepository t, PasswordEncoder e, JwtService j) {
+        users = u;
+        tokens = t;
+        encoder = e;
+        jwt = j;
+    }
+
+    public LoginResponse login(String email, String password) {
+        UserEntity u = users.findByEmailIgnoreCase(email.trim()).filter(UserEntity::isActive).orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+        if (!encoder.matches(password, u.getPasswordHash()))
+            throw new BadCredentialsException("Invalid email or password");
+        return new LoginResponse(jwt.issue(u), profile(u));
+    }
+
+    @Transactional
+    public String requestReset(String email) {
+        users.findByEmailIgnoreCase(email.trim()).filter(UserEntity::isActive).ifPresent(u -> {
+            Instant n = Instant.now();
+            String raw = randomToken();
+            tokens.invalidateOutstanding(u.getId(), n);
+            tokens.save(new ResetTokenEntity(u.getId(), hash(raw), n.plus(Duration.ofMinutes(15))));
+            System.out.println("[DEV PASSWORD RESET] email=" + u.getEmail() + " token=" + raw);
+        });
+        return "If an active account exists, a password reset token has been issued.";
+    }
+
+    @Transactional
+    public void resetPassword(String raw, String next) {
+        var t = tokens.findByTokenHash(hash(raw)).filter(x -> x.getUsedAt() == null && x.getExpiresAt().isAfter(Instant.now())).orElseThrow(() -> new BadCredentialsException("Invalid or expired reset token"));
+        var u = users.findById(t.getUserId()).orElseThrow();
+        u.setPasswordHash(encoder.encode(next));
+        users.save(u);
+        t.setUsedAt(Instant.now());
+        tokens.save(t);
+    }
+
+    @Transactional
+    public void changePassword(long id, String current, String next) {
+        var u = users.findById(id).orElseThrow();
+        if (!encoder.matches(current, u.getPasswordHash()))
+            throw new BadCredentialsException("Current password is incorrect");
+        u.setPasswordHash(encoder.encode(next));
+        users.save(u);
+    }
+
+    public ProfileResponse profile(long id) {
+        return profile(users.findById(id).orElseThrow());
+    }
+
+    @Transactional
+    public ProfileResponse updateProfile(long id, UpdateProfileRequest r) {
+        var u = users.findById(id).orElseThrow();
+        u.setName(r.name().trim());
+        u.setMobile(r.mobile());
+        u.setDesignation(r.designation());
+        u.setOffice(r.office());
+        return profile(users.save(u));
+    }
+
+    public ProfileResponse profile(UserEntity u) {
+        return new ProfileResponse(u.getId(), u.getEmail(), u.getRole().name(), u.getName(), u.getMobile(), u.getDesignation(), u.getOffice(), u.isActive());
+    }
+
+    private String randomToken() {
+        byte[] b = new byte[32];
+        random.nextBytes(b);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(b);
+    }
+
+    private String hash(String v) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(v.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+}

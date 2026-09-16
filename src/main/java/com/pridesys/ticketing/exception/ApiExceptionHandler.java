@@ -14,12 +14,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
-    @ExceptionHandler(AccessDeniedException.class) @ResponseStatus(HttpStatus.FORBIDDEN)
-    Map<String, String> forbidden(AccessDeniedException e) { return Map.of("error", "FORBIDDEN", "message", e.getMessage()); }
-    @ExceptionHandler(DataIntegrityViolationException.class) @ResponseStatus(HttpStatus.CONFLICT)
-    Map<String, String> conflict(DataIntegrityViolationException e) { return Map.of("error", "CONFLICT", "message", "Resource violates a uniqueness or integrity constraint"); }
-    @ExceptionHandler(NoSuchElementException.class) @ResponseStatus(HttpStatus.NOT_FOUND)
-    Map<String, String> notFound(NoSuchElementException e) { return Map.of("error", "NOT_FOUND", "message", "Resource not found"); }
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    Map<String, String> forbidden(AccessDeniedException e) {
+        return Map.of("error", "FORBIDDEN", "message", e.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    Map<String, String> conflict(DataIntegrityViolationException e) {
+        return Map.of("error", "CONFLICT", "message", "Resource violates a uniqueness or integrity constraint");
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    Map<String, String> notFound(NoSuchElementException e) {
+        return Map.of("error", "NOT_FOUND", "message", "Resource not found");
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     Map<String, String> badCredentials(BadCredentialsException e) {

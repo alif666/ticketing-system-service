@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.dto.CreateUserRequest;
 import com.pridesys.ticketing.repository.UserRepository;
 import com.pridesys.ticketing.user.service.impl.UserServiceImpl;
 
@@ -24,7 +25,7 @@ class UserServiceTest {
     void clientAdminCannotCreateAppAdmin() {
         var s = new UserServiceImpl(users, encoder);
         var a = user(UserRole.CLIENT_ADMIN, 1L);
-        assertThrows(AccessDeniedException.class, () -> s.create(a, new UserServiceImpl.CreateUser("x@test.com", "X", UserRole.APP_ADMIN, 1L)));
+        assertThrows(AccessDeniedException.class, () -> s.create(a, new CreateUserRequest("x@test.com", "X", UserRole.APP_ADMIN, 1L)));
         verifyNoInteractions(users);
     }
 

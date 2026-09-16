@@ -1,2 +1,50 @@
-package com.pridesys.ticketing.module.controller;import com.pridesys.ticketing.dto.*;import com.pridesys.ticketing.entity.*;import com.pridesys.ticketing.repository.UserRepository;import com.pridesys.ticketing.module.service.IModuleService;import com.pridesys.ticketing.security.util.JwtService;import jakarta.validation.Valid;import org.springframework.web.bind.annotation.*;import org.springframework.security.core.Authentication;import java.util.*;
-@RestController@RequestMapping("/api/projects/{projectId}/modules")public class ModuleController{private final UserRepository users;private final IModuleService service;public ModuleController(UserRepository u,IModuleService s){users=u;service=s;}private UserEntity actor(Authentication a){return users.findById(((JwtService.UserPrincipal)a.getPrincipal()).id()).orElseThrow();}@GetMapping public PageResponse<ModuleResponseDto> list(Authentication a,@PathVariable long projectId,@RequestParam(defaultValue="0")int page,@RequestParam(defaultValue="20")int size){return service.list(actor(a),projectId,page,size);}@PostMapping public ModuleResponseDto create(Authentication a,@PathVariable long projectId,@Valid@RequestBody UsersProjectsDtos.CreateModuleRequest r){return service.create(actor(a),projectId,r);}@PatchMapping("/{id}")public Map<String,String> update(Authentication a,@PathVariable long projectId,@PathVariable long id,@Valid@RequestBody UsersProjectsDtos.UpdateModuleRequest r){service.update(actor(a),projectId,id,r);return Map.of("message","Module updated");}@DeleteMapping("/{id}")public Map<String,String> delete(Authentication a,@PathVariable long projectId,@PathVariable long id){service.delete(actor(a),projectId,id);return Map.of("message","Module deleted");}}
+package com.pridesys.ticketing.module.controller;
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.module.service.IModuleService;
+import com.pridesys.ticketing.security.util.JwtService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
+import java.util.*;
+
+@RestController
+@RequestMapping("/api/projects/{projectId}/modules")
+public class ModuleController {
+    private final UserRepository users;
+    private final IModuleService service;
+
+    public ModuleController(UserRepository u, IModuleService s) {
+        users = u;
+        service = s;
+    }
+
+    private UserEntity actor(Authentication a) {
+        return users.findById(((JwtService.UserPrincipal) a.getPrincipal()).id()).orElseThrow();
+    }
+
+    @GetMapping
+    public PageResponse<ModuleResponseDto> list(Authentication a, @PathVariable long projectId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return service.list(actor(a), projectId, page, size);
+    }
+
+    @PostMapping
+    public ModuleResponseDto create(Authentication a, @PathVariable long projectId, @Valid @RequestBody CreateModuleRequest r) {
+        return service.create(actor(a), projectId, r);
+    }
+
+    @PatchMapping("/{id}")
+    public Map<String, String> update(Authentication a, @PathVariable long projectId, @PathVariable long id, @Valid @RequestBody UpdateModuleRequest r) {
+        service.update(actor(a), projectId, id, r);
+        return Map.of("message", "Module updated");
+    }
+
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(Authentication a, @PathVariable long projectId, @PathVariable long id) {
+        service.delete(actor(a), projectId, id);
+        return Map.of("message", "Module deleted");
+    }
+}
