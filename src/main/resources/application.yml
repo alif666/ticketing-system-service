@@ -10,6 +10,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    connect-retries: 60
+    connect-retries-interval: 5
 
 management:
   endpoints:

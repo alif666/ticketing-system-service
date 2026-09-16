@@ -17,6 +17,14 @@ docker compose up --build
 
 The API is available at `http://localhost:8080`. The frontend is intentionally not part of this increment; it will be added when the client repository is ready.
 
+For IntelliJ development, start only the database in the background and then run the Spring Boot configuration from IntelliJ:
+
+```bash
+docker compose up -d mysql
+```
+
+The MySQL container is configured with `restart: unless-stopped`, so Docker Desktop can restart it automatically. The first startup may take up to a minute; wait until `docker compose ps` reports `healthy`. Flyway retries during this startup window.
+
 ## Foundation checks
 
 ```bash
