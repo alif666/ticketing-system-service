@@ -1,2 +1,42 @@
-package com.pridesys.ticketing.user.service;import static org.junit.jupiter.api.Assertions.assertThrows;import static org.mockito.Mockito.*;import org.junit.jupiter.api.Test;import org.junit.jupiter.api.extension.ExtendWith;import org.mockito.*;import org.mockito.junit.jupiter.MockitoExtension;import org.springframework.security.access.AccessDeniedException;import org.springframework.security.crypto.password.PasswordEncoder;import com.pridesys.ticketing.entity.*;import com.pridesys.ticketing.repository.UserRepository;import com.pridesys.ticketing.user.service.impl.UserServiceImpl;
-@ExtendWith(MockitoExtension.class)class UserServiceTest{@Mock UserRepository users;@Mock PasswordEncoder encoder;@Test void clientAdminCannotCreateAppAdmin(){var s=new UserServiceImpl(users,encoder);var a=user(UserRole.CLIENT_ADMIN,1L);assertThrows(AccessDeniedException.class,()->s.create(a,new UserServiceImpl.CreateUser("x@test.com","X",UserRole.APP_ADMIN,1L)));verifyNoInteractions(users);}@Test void clientAdminCannotManageOtherClient(){var s=new UserServiceImpl(users,encoder);var a=user(UserRole.CLIENT_ADMIN,1L);when(users.findById(9L)).thenReturn(java.util.Optional.of(user(UserRole.CLIENT_USER,2L)));assertThrows(AccessDeniedException.class,()->s.deactivate(a,9L));}private UserEntity user(UserRole r,Long c){return new UserEntity("u@test.com","hash",r,"User",c);}}
+package com.pridesys.ticketing.user.service;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.user.service.impl.UserServiceImpl;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+    @Mock
+    UserRepository users;
+    @Mock
+    PasswordEncoder encoder;
+
+    @Test
+    void clientAdminCannotCreateAppAdmin() {
+        var s = new UserServiceImpl(users, encoder);
+        var a = user(UserRole.CLIENT_ADMIN, 1L);
+        assertThrows(AccessDeniedException.class, () -> s.create(a, new UserServiceImpl.CreateUser("x@test.com", "X", UserRole.APP_ADMIN, 1L)));
+        verifyNoInteractions(users);
+    }
+
+    @Test
+    void clientAdminCannotManageOtherClient() {
+        var s = new UserServiceImpl(users, encoder);
+        var a = user(UserRole.CLIENT_ADMIN, 1L);
+        when(users.findById(9L)).thenReturn(java.util.Optional.of(user(UserRole.CLIENT_USER, 2L)));
+        assertThrows(AccessDeniedException.class, () -> s.deactivate(a, 9L));
+    }
+
+    private UserEntity user(UserRole r, Long c) {
+        return new UserEntity("u@test.com", "hash", r, "User", c);
+    }
+}

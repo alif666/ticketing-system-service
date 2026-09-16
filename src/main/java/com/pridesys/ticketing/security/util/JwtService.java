@@ -10,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.pridesys.ticketing.entity.UserRecord;
 import com.pridesys.ticketing.entity.UserEntity;
 import com.pridesys.ticketing.entity.UserRole;
 
@@ -24,12 +23,6 @@ public class JwtService {
         if (secret.getBytes(StandardCharsets.UTF_8).length < 32) throw new IllegalArgumentException("JWT secret must be at least 32 bytes");
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.lifetime = lifetime;
-    }
-
-    public String issue(UserRecord user) {
-        Date now = new Date();
-        return Jwts.builder().subject(Long.toString(user.id())).claim("email", user.email()).claim("role", user.role().name())
-                .issuedAt(now).expiration(new Date(now.getTime() + lifetime.toMillis())).signWith(key).compact();
     }
 
     public String issue(UserEntity user) {

@@ -1,3 +1,78 @@
 package com.pridesys.ticketing.auth.service;
-import static org.assertj.core.api.Assertions.*;import static org.mockito.ArgumentMatchers.*;import static org.mockito.Mockito.*;import java.util.*;import org.junit.jupiter.api.Test;import org.junit.jupiter.api.extension.ExtendWith;import org.mockito.*;import org.mockito.junit.jupiter.MockitoExtension;import org.springframework.security.authentication.BadCredentialsException;import org.springframework.security.crypto.password.PasswordEncoder;import com.pridesys.ticketing.entity.*;import com.pridesys.ticketing.repository.*;import com.pridesys.ticketing.security.util.JwtService;
-@ExtendWith(MockitoExtension.class) class AuthServiceTest {@Mock UserRepository users;@Mock ResetTokenRepository tokens;@Mock PasswordEncoder encoder;@Mock JwtService jwt;@InjectMocks AuthService service;@Test void inactiveLoginRejected(){var u=user(false);when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));assertThatThrownBy(()->service.login(u.getEmail(),"Password123!")).isInstanceOf(BadCredentialsException.class);verifyNoInteractions(encoder,jwt);}@Test void wrongPasswordRejected(){var u=user(true);when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));when(encoder.matches("wrong",u.getPasswordHash())).thenReturn(false);assertThatThrownBy(()->service.login(u.getEmail(),"wrong")).isInstanceOf(BadCredentialsException.class);}@Test void loginIssuesJwt(){var u=user(true);when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));when(encoder.matches("Password123!",u.getPasswordHash())).thenReturn(true);when(jwt.issue(u)).thenReturn("jwt");assertThat(service.login(u.getEmail(),"Password123!").token()).isEqualTo("jwt");}@Test void expiredResetRejected(){when(tokens.findByTokenHash(anyString())).thenReturn(Optional.empty());assertThatThrownBy(()->service.resetPassword("token","NewPassword123!")).isInstanceOf(BadCredentialsException);verifyNoInteractions(users,encoder);}@Test void changePasswordChecksCurrent(){var u=user(true);when(users.findById(1L)).thenReturn(Optional.of(u));when(encoder.matches("wrong",u.getPasswordHash())).thenReturn(false);assertThatThrownBy(()->service.changePassword(1,"wrong","NewPassword123!")).isInstanceOf(BadCredentialsException);verify(users,never()).save(any());}private UserEntity user(boolean active){var u=new UserEntity("user@example.com","stored-hash",UserRole.CLIENT_USER,"Test User",1L);u.setActive(active);return u;}}
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.*;
+import com.pridesys.ticketing.security.util.JwtService;
+
+@ExtendWith(MockitoExtension.class)
+class AuthServiceTest {
+    @Mock
+    UserRepository users;
+    @Mock
+    ResetTokenRepository tokens;
+    @Mock
+    PasswordEncoder encoder;
+    @Mock
+    JwtService jwt;
+    @InjectMocks
+    AuthService service;
+
+    @Test
+    void inactiveLoginRejected() {
+        var u = user(false);
+        when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));
+        assertThatThrownBy(() -> service.login(u.getEmail(), "Password123!")).isInstanceOf(BadCredentialsException.class);
+        verifyNoInteractions(encoder, jwt);
+    }
+
+    @Test
+    void wrongPasswordRejected() {
+        var u = user(true);
+        when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));
+        when(encoder.matches("wrong", u.getPasswordHash())).thenReturn(false);
+        assertThatThrownBy(() -> service.login(u.getEmail(), "wrong")).isInstanceOf(BadCredentialsException.class);
+    }
+
+    @Test
+    void loginIssuesJwt() {
+        var u = user(true);
+        when(users.findByEmailIgnoreCase(u.getEmail())).thenReturn(Optional.of(u));
+        when(encoder.matches("Password123!", u.getPasswordHash())).thenReturn(true);
+        when(jwt.issue(u)).thenReturn("jwt");
+        assertThat(service.login(u.getEmail(), "Password123!").token()).isEqualTo("jwt");
+    }
+
+    @Test
+    void expiredResetRejected() {
+        when(tokens.findByTokenHash(anyString())).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.resetPassword("token", "NewPassword123!")).isInstanceOf(BadCredentialsException);
+        verifyNoInteractions(users, encoder);
+    }
+
+    @Test
+    void changePasswordChecksCurrent() {
+        var u = user(true);
+        when(users.findById(1L)).thenReturn(Optional.of(u));
+        when(encoder.matches("wrong", u.getPasswordHash())).thenReturn(false);
+        assertThatThrownBy(() -> service.changePassword(1, "wrong", "NewPassword123!")).isInstanceOf(BadCredentialsException);
+        verify(users, never()).save(any());
+    }
+
+    private UserEntity user(boolean active) {
+        var u = new UserEntity("user@example.com", "stored-hash", UserRole.CLIENT_USER, "Test User", 1L);
+        u.setActive(active);
+        return u;
+    }
+}

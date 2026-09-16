@@ -47,6 +47,7 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 - `/app/storage` is a private filesystem volume behind a storage abstraction that will be introduced with the attachment feature. It is not exposed as a public web directory.
 - Ticket-domain features are deliberately deferred to later incremental branches.
 - Feature services follow interface/implementation separation (`IUserService`/`UserServiceImpl`, `IProjectService`/`ProjectServiceImpl`, and `IModuleService`/`ModuleServiceImpl`). API response models are dedicated DTOs under `dto`.
+- Application code uses JPA only; database seeding uses repositories and Actuator provides database health details. API errors consistently expose JSON 401/403/404/409 responses.
 
 ## Users, clients, projects and modules
 
