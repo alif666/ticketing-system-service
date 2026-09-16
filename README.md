@@ -44,4 +44,26 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 - MySQL is the relational store selected for the assignment.
 - Flyway owns schema migrations from the beginning.
 - `/app/storage` is a private filesystem volume behind a storage abstraction that will be introduced with the attachment feature. It is not exposed as a public web directory.
-- Authentication, roles, DTOs, validation, and ticket domains are deliberately deferred to later incremental branches.
+- Ticket-domain features are deliberately deferred to later incremental branches.
+
+## Authentication foundation test suite
+
+Run the regression suite with:
+
+```bash
+mvn test
+```
+
+Tests live under `src/test/java` and cover active/inactive login, wrong passwords, JWT identity and role claims, password changes, and single-use/expired reset tokens. Local seed users use `Password123!`; seed generation hashes this password at startup and can be disabled with `APP_SEED_ENABLED=false`.
+
+Import `postman-auth-profile.collection.json` for login, profile, and unauthenticated-access checks. The login request stores its JWT in the collection's `token` variable.
+
+Seed accounts:
+
+| Email | Role | Password |
+| --- | --- | --- |
+| `app.admin@example.com` | APP_ADMIN | `Password123!` |
+| `client.admin@example.com` | CLIENT_ADMIN | `Password123!` |
+| `client.user@example.com` | CLIENT_USER | `Password123!` |
+
+Reset tokens are logged by the API with the `[DEV PASSWORD RESET]` prefix. In production, the token must be delivered through an email provider instead of logs.
