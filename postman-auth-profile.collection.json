@@ -7,7 +7,8 @@
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
-    { "key": "token", "value": "", "type": "string" }
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "resetToken", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -43,7 +44,47 @@
         "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
         "body": { "mode": "raw", "raw": "{\n  \"name\": \"Client User Updated\",\n  \"mobile\": \"01700000003\",\n  \"designation\": \"Support User\",\n  \"office\": \"Dhaka\"\n}" },
         "url": { "raw": "{{baseUrl}}/api/me", "host": ["{{baseUrl}}"], "path": ["api", "me"] }
-      }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text", "exec": [
+        "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });"
+      ] } }]
+    },
+    {
+      "name": "Change my password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"Password123!\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/me/change-password", "host": ["{{baseUrl}}"], "path": ["api", "me", "change-password"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text", "exec": [
+        "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });"
+      ] } }]
+    },
+    {
+      "name": "Forgot password (read token from API log)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"client.user@example.com\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["api", "auth", "forgot-password"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text", "exec": [
+        "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('does not expose reset token in response', function () { pm.expect(pm.response.text()).not.to.include('token'); });"
+      ] } }]
+    },
+    {
+      "name": "Reset password (paste token first)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"Password123!\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["api", "auth", "reset-password"] }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text", "exec": [
+        "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });"
+      ] } }]
     },
     {
       "name": "Unauthenticated profile is rejected",
