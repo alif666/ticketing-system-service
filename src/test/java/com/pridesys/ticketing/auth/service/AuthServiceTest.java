@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -14,6 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.pridesys.ticketing.entity.UserRecord;
+import com.pridesys.ticketing.entity.UserRole;
+import com.pridesys.ticketing.repository.ResetTokenRepository;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.security.util.JwtService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

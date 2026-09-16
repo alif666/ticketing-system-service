@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.entity;
 
 public enum UserRole {
     APP_ADMIN,

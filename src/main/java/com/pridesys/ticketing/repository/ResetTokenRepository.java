@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.repository;
 
 import java.sql.Timestamp;
 import java.time.Instant;

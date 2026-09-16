@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.security.filter;
 
 import java.io.IOException;
 
@@ -10,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.security.util.JwtService;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwt;

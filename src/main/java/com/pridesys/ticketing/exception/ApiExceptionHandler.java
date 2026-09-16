@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.api;
+package com.pridesys.ticketing.exception;
 
 import java.util.Map;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import com.pridesys.ticketing.entity.UserRecord;
+import com.pridesys.ticketing.entity.UserRole;
 
 @Repository
 public class UserRepository {

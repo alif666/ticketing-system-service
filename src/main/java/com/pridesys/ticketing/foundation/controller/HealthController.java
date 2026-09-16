@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.foundation;
+package com.pridesys.ticketing.foundation.controller;
 
 import java.util.Map;
 

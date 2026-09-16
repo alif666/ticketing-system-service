@@ -1,9 +1,12 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.auth.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.pridesys.ticketing.dto.AuthDtos;
+import com.pridesys.ticketing.auth.service.AuthService;
+import com.pridesys.ticketing.security.util.JwtService;
 
 @RestController
 @RequestMapping("/api")

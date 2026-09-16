@@ -1,8 +1,10 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.security.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import com.pridesys.ticketing.entity.UserRecord;
+import com.pridesys.ticketing.entity.UserRole;
 
 class JwtServiceTest {
     private final JwtService service = new JwtService("test-secret-that-is-at-least-32-characters", java.time.Duration.ofHours(1));

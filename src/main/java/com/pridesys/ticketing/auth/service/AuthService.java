@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.auth.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -12,6 +12,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.pridesys.ticketing.dto.AuthDtos;
+import com.pridesys.ticketing.entity.UserRecord;
+import com.pridesys.ticketing.repository.ResetTokenRepository;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.security.util.JwtService;
 
 @Service
 public class AuthService {

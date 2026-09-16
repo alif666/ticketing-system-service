@@ -1,4 +1,4 @@
-package com.pridesys.ticketing.auth;
+package com.pridesys.ticketing.security;
 
 import java.util.Map;
 
@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.security.util.JwtService;
+import com.pridesys.ticketing.security.filter.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
