@@ -64,6 +64,8 @@ Issue listing supports optional stage, type, priority, module, and title filters
 
 Verification endpoints support requesting verification, an administrator-only project-scoped paginated queue, approval, and rejection with a required reason. Approval accepts the issue and advances TESTING issues to DEPLOYED; rejection records the reason and returns the issue to UNDER_DEVELOPMENT.
 
+Comments and attachments are issue-scoped. Comment authors or APP_ADMIN may edit/delete comments; attachments use local filesystem storage, a 10 MB limit, an allowlist, and authenticated downloads.
+
 ## Authentication foundation test suite
 
 Run the regression suite with:
