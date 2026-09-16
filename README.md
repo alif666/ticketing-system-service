@@ -32,7 +32,7 @@ curl http://localhost:8080/api/health
 curl http://localhost:8080/actuator/health
 ```
 
-You can import `postman-foundation.collection.json` into Postman and run the two requests in order. The collection uses `http://localhost:8080` as its `baseUrl` variable.
+You can import `postman.json` into Postman and run the Foundation requests. The collection uses `http://localhost:8080` as its `baseUrl` variable and will grow with each incremental API update.
 
 Expected responses include `{"status":"UP"}`. Flyway creates the initial `app_metadata` table when the API starts. MySQL data and the private attachment directory are stored in named Docker volumes.
 
@@ -56,7 +56,7 @@ mvn test
 
 Tests live under `src/test/java` and cover active/inactive login, wrong passwords, JWT identity and role claims, password changes, and single-use/expired reset tokens. Local seed users use `Password123!`; seed generation hashes this password at startup and can be disabled with `APP_SEED_ENABLED=false`.
 
-Import `postman-auth-profile.collection.json` for login, profile, and unauthenticated-access checks. The login request stores its JWT in the collection's `token` variable.
+The Auth and profile folder in `postman.json` contains login, profile, password, reset, and unauthenticated-access checks. The login request stores its JWT in the collection's `token` variable.
 
 Seed accounts:
 
