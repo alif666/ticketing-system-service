@@ -1,6 +1,7 @@
 package com.pridesys.ticketing.exception;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;

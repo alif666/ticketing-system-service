@@ -48,6 +48,7 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 - Ticket-domain features are deliberately deferred to later incremental branches.
 - Feature services follow interface/implementation separation (`IUserService`/`UserServiceImpl`, `IProjectService`/`ProjectServiceImpl`, and `IModuleService`/`ModuleServiceImpl`). API response models are dedicated DTOs under `dto`.
 - Application code uses JPA only; database seeding uses repositories and Actuator provides database health details. API errors consistently expose JSON 401/403/404/409 responses.
+- List endpoints return a `PageResponse` envelope with `content`, `page`, `size`, `totalElements`, and `totalPages`; client-scoped user searches are filtered in the database before pagination.
 
 ## Users, clients, projects and modules
 
