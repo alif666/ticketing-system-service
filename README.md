@@ -60,6 +60,8 @@ The cumulative `postman.json` collection contains requests for the new endpoints
 
 The `4-issues-audit` increment adds project-scoped issue creation, search/pagination, detail, edits, stage transitions, and chronological audit records. Issue access is enforced server-side through project membership; CLIENT_USER may only move their own SUBMITTED issue to DECLINED or RESOLVED. Flyway migration `V4__issues_audit.sql` creates the issue and audit tables.
 
+Issue listing supports optional stage, type, priority, module, and title filters. Administrative stage transitions follow the defined lifecycle, and updates record each changed field in the audit trail.
+
 ## Authentication foundation test suite
 
 Run the regression suite with:
