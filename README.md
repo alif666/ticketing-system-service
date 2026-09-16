@@ -62,6 +62,8 @@ The `4-issues-audit` increment adds project-scoped issue creation, search/pagina
 
 Issue listing supports optional stage, type, priority, module, and title filters. Administrative stage transitions follow the defined lifecycle, and updates record each changed field in the audit trail.
 
+Verification endpoints support requesting verification, an administrator-only project-scoped queue, approval, and rejection with a required reason. Approval accepts the issue and advances TESTING issues to DEPLOYED; rejection records the reason and returns the issue to UNDER_DEVELOPMENT.
+
 ## Authentication foundation test suite
 
 Run the regression suite with:
