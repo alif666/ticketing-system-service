@@ -1,0 +1,1 @@
+package com.pridesys.ticketing.client.service;import com.pridesys.ticketing.dto.*;import com.pridesys.ticketing.entity.UserEntity;import java.util.*;public interface IClientService{List<ClientResponseDto> list(UserEntity actor);ClientResponseDto create(UserEntity actor,UsersProjectsDtos.CreateClientRequest request);}
