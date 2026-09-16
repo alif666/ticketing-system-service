@@ -1,0 +1,3 @@
+package com.pridesys.ticketing.issue.service;
+import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.UserEntity; import java.util.*;
+public interface IIssueService { PageResponse<IssueResponseDto> list(UserEntity actor,long projectId,String q,int page,int size); IssueResponseDto get(UserEntity actor,long id); IssueResponseDto create(UserEntity actor,CreateIssueRequest request); IssueResponseDto update(UserEntity actor,long id,UpdateIssueRequest request); IssueResponseDto move(UserEntity actor,long id,com.pridesys.ticketing.entity.IssueStage stage); List<IssueAuditResponseDto> audit(UserEntity actor,long id); }

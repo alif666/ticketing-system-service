@@ -56,6 +56,10 @@ The `3-users-projects` increment adds protected `/api/users`, `/api/clients`, `/
 
 The cumulative `postman.json` collection contains requests for the new endpoints. Create a project as APP_ADMIN, add a member using `PUT /api/projects/{projectId}/members/{userId}`, then log in as that member before listing projects/modules.
 
+## Issues and audit
+
+The `4-issues-audit` increment adds project-scoped issue creation, search/pagination, detail, edits, stage transitions, and chronological audit records. Issue access is enforced server-side through project membership; CLIENT_USER may only move their own SUBMITTED issue to DECLINED or RESOLVED. Flyway migration `V4__issues_audit.sql` creates the issue and audit tables.
+
 ## Authentication foundation test suite
 
 Run the regression suite with:
