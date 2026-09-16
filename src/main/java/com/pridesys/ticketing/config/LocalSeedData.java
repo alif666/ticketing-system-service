@@ -14,10 +14,13 @@ public class LocalSeedData implements CommandLineRunner {
 
     public LocalSeedData(JdbcTemplate jdbc, PasswordEncoder encoder,
                          @Value("${app.seed.enabled:true}") boolean enabled) {
-        this.jdbc = jdbc; this.encoder = encoder; this.enabled = enabled;
+        this.jdbc = jdbc;
+        this.encoder = encoder;
+        this.enabled = enabled;
     }
 
-    @Override public void run(String... args) {
+    @Override
+    public void run(String... args) {
         if (!enabled) return;
         String hash = encoder.encode("Password123!");
         seed("app.admin@example.com", "APP_ADMIN", "Application Admin", "01700000001", "Company Administrator", hash);
@@ -27,7 +30,7 @@ public class LocalSeedData implements CommandLineRunner {
 
     private void seed(String email, String role, String name, String mobile, String designation, String hash) {
         jdbc.update("INSERT INTO users (email,password_hash,role,name,mobile,designation,office) VALUES (?,?,?,?,?,?,?) "
-                + "ON DUPLICATE KEY UPDATE role=VALUES(role),name=VALUES(name),mobile=VALUES(mobile),designation=VALUES(designation),active=TRUE",
+                        + "ON DUPLICATE KEY UPDATE role=VALUES(role),name=VALUES(name),mobile=VALUES(mobile),designation=VALUES(designation),active=TRUE",
                 email, hash, role, name, mobile, designation, "Dhaka");
     }
 }

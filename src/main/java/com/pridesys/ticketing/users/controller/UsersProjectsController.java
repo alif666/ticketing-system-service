@@ -1,21 +1,121 @@
 package com.pridesys.ticketing.users.controller;
-import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.*; import com.pridesys.ticketing.repository.*; import com.pridesys.ticketing.users.service.*; import com.pridesys.ticketing.security.util.JwtService; import jakarta.validation.Valid; import org.springframework.web.bind.annotation.*; import org.springframework.security.core.Authentication; import java.util.*;
-@RestController @RequestMapping("/api") public class UsersProjectsController { private final UserRecordRepository users; private final UserManagementService userService; private final ClientRecordRepository clients; private final ProjectService projectService; public UsersProjectsController(UserRecordRepository u,UserManagementService us,ClientRecordRepository c,ProjectService ps){users=u;userService=us;clients=c;projectService=ps;}
- private UserRecord actor(Authentication a){return users.findById(((JwtService.UserPrincipal)a.getPrincipal()).id()).orElseThrow();}
- @GetMapping("/users") public List<AuthDtos.ProfileResponse> users(Authentication a,@RequestParam(defaultValue="")String search,@RequestParam(defaultValue="0")int page,@RequestParam(defaultValue="20")int size){return userService.list(actor(a),search,page,size);}
- @PostMapping("/users") public AuthDtos.ProfileResponse createUser(Authentication a,@Valid @RequestBody UsersProjectsDtos.CreateUserRequest r){return userService.create(actor(a),new UserManagementService.CreateUser(r.email(),r.name(),r.role(),r.clientId()));}
- @PostMapping("/users/{id}/deactivate") public Map<String,String> deactivate(Authentication a,@PathVariable long id){userService.deactivate(actor(a),id);return Map.of("message","User deactivated");}
- @PatchMapping("/users/{id}") public AuthDtos.ProfileResponse updateUser(Authentication a,@PathVariable long id,@Valid @RequestBody UsersProjectsDtos.UpdateUserRequest r){return userService.update(actor(a),id,r);}
- @GetMapping("/clients") public List<ClientRecord> clients(Authentication a){requireAppAdmin(actor(a));return clients.findAll();}
- @PostMapping("/clients") public ClientRecord createClient(Authentication a,@Valid @RequestBody UsersProjectsDtos.CreateClientRequest r){requireAppAdmin(actor(a));long id=clients.create(r);return clients.findAll().stream().filter(c->c.id()==id).findFirst().orElseThrow();}
- @GetMapping("/projects") public List<ProjectRecord> projects(Authentication a){return projectService.projects(actor(a));}
- @PostMapping("/projects") public ProjectRecord createProject(Authentication a,@Valid @RequestBody UsersProjectsDtos.CreateProjectRequest r){return projectService.create(actor(a),r);}
- @PatchMapping("/projects/{id}") public Map<String,String> updateProject(Authentication a,@PathVariable long id,@Valid @RequestBody UsersProjectsDtos.UpdateProjectRequest r){projectService.update(actor(a),id,r);return Map.of("message","Project updated");}
- @PutMapping("/projects/{projectId}/members/{userId}") public Map<String,String> addMember(Authentication a,@PathVariable long projectId,@PathVariable long userId){projectService.member(actor(a),projectId,userId,true);return Map.of("message","Member added");}
- @DeleteMapping("/projects/{projectId}/members/{userId}") public Map<String,String> removeMember(Authentication a,@PathVariable long projectId,@PathVariable long userId){projectService.member(actor(a),projectId,userId,false);return Map.of("message","Member removed");}
- @GetMapping("/projects/{projectId}/modules") public List<ModuleRecord> modules(Authentication a,@PathVariable long projectId){return projectService.modules(actor(a),projectId);}
- @PostMapping("/projects/{projectId}/modules") public ModuleRecord createModule(Authentication a,@PathVariable long projectId,@Valid @RequestBody UsersProjectsDtos.CreateModuleRequest r){return projectService.createModule(actor(a),projectId,r);}
- @PatchMapping("/projects/{projectId}/modules/{id}") public Map<String,String> updateModule(Authentication a,@PathVariable long projectId,@PathVariable long id,@Valid @RequestBody UsersProjectsDtos.UpdateModuleRequest r){projectService.updateModule(actor(a),projectId,id,r);return Map.of("message","Module updated");}
- @DeleteMapping("/projects/{projectId}/modules/{id}") public Map<String,String> deleteModule(Authentication a,@PathVariable long projectId,@PathVariable long id){projectService.deleteModule(actor(a),projectId,id);return Map.of("message","Module deleted");}
- private void requireAppAdmin(UserRecord a){if(a.role()!=UserRole.APP_ADMIN)throw new org.springframework.security.access.AccessDeniedException("APP_ADMIN required");}
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.*;
+import com.pridesys.ticketing.users.service.*;
+import com.pridesys.ticketing.security.util.JwtService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
+import java.util.*;
+
+@RestController
+@RequestMapping("/api")
+public class UsersProjectsController {
+    private final UserRecordRepository users;
+    private final UserManagementService userService;
+    private final ClientRecordRepository clients;
+    private final ProjectService projectService;
+
+    public UsersProjectsController(UserRecordRepository u, UserManagementService us, ClientRecordRepository c, ProjectService ps) {
+        users = u;
+        userService = us;
+        clients = c;
+        projectService = ps;
+    }
+
+    private UserRecord actor(Authentication a) {
+        return users.findById(((JwtService.UserPrincipal) a.getPrincipal()).id()).orElseThrow();
+    }
+
+    @GetMapping("/users")
+    public List<AuthDtos.ProfileResponse> users(Authentication a, @RequestParam(defaultValue = "") String search, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return userService.list(actor(a), search, page, size);
+    }
+
+    @PostMapping("/users")
+    public AuthDtos.ProfileResponse createUser(Authentication a, @Valid @RequestBody UsersProjectsDtos.CreateUserRequest r) {
+        return userService.create(actor(a), new UserManagementService.CreateUser(r.email(), r.name(), r.role(), r.clientId()));
+    }
+
+    @PostMapping("/users/{id}/deactivate")
+    public Map<String, String> deactivate(Authentication a, @PathVariable long id) {
+        userService.deactivate(actor(a), id);
+        return Map.of("message", "User deactivated");
+    }
+
+    @PatchMapping("/users/{id}")
+    public AuthDtos.ProfileResponse updateUser(Authentication a, @PathVariable long id, @Valid @RequestBody UsersProjectsDtos.UpdateUserRequest r) {
+        return userService.update(actor(a), id, r);
+    }
+
+    @GetMapping("/clients")
+    public List<ClientRecord> clients(Authentication a) {
+        requireAppAdmin(actor(a));
+        return clients.findAll();
+    }
+
+    @PostMapping("/clients")
+    public ClientRecord createClient(Authentication a, @Valid @RequestBody UsersProjectsDtos.CreateClientRequest r) {
+        requireAppAdmin(actor(a));
+        long id = clients.create(r);
+        return clients.findAll().stream().filter(c -> c.id() == id).findFirst().orElseThrow();
+    }
+
+    @GetMapping("/projects")
+    public List<ProjectRecord> projects(Authentication a) {
+        return projectService.projects(actor(a));
+    }
+
+    @PostMapping("/projects")
+    public ProjectRecord createProject(Authentication a, @Valid @RequestBody UsersProjectsDtos.CreateProjectRequest r) {
+        return projectService.create(actor(a), r);
+    }
+
+    @PatchMapping("/projects/{id}")
+    public Map<String, String> updateProject(Authentication a, @PathVariable long id, @Valid @RequestBody UsersProjectsDtos.UpdateProjectRequest r) {
+        projectService.update(actor(a), id, r);
+        return Map.of("message", "Project updated");
+    }
+
+    @PutMapping("/projects/{projectId}/members/{userId}")
+    public Map<String, String> addMember(Authentication a, @PathVariable long projectId, @PathVariable long userId) {
+        projectService.member(actor(a), projectId, userId, true);
+        return Map.of("message", "Member added");
+    }
+
+    @DeleteMapping("/projects/{projectId}/members/{userId}")
+    public Map<String, String> removeMember(Authentication a, @PathVariable long projectId, @PathVariable long userId) {
+        projectService.member(actor(a), projectId, userId, false);
+        return Map.of("message", "Member removed");
+    }
+
+    @GetMapping("/projects/{projectId}/modules")
+    public List<ModuleRecord> modules(Authentication a, @PathVariable long projectId) {
+        return projectService.modules(actor(a), projectId);
+    }
+
+    @PostMapping("/projects/{projectId}/modules")
+    public ModuleRecord createModule(Authentication a, @PathVariable long projectId, @Valid @RequestBody UsersProjectsDtos.CreateModuleRequest r) {
+        return projectService.createModule(actor(a), projectId, r);
+    }
+
+    @PatchMapping("/projects/{projectId}/modules/{id}")
+    public Map<String, String> updateModule(Authentication a, @PathVariable long projectId, @PathVariable long id, @Valid @RequestBody UsersProjectsDtos.UpdateModuleRequest r) {
+        projectService.updateModule(actor(a), projectId, id, r);
+        return Map.of("message", "Module updated");
+    }
+
+    @DeleteMapping("/projects/{projectId}/modules/{id}")
+    public Map<String, String> deleteModule(Authentication a, @PathVariable long projectId, @PathVariable long id) {
+        projectService.deleteModule(actor(a), projectId, id);
+        return Map.of("message", "Module deleted");
+    }
+
+    private void requireAppAdmin(UserRecord a) {
+        if (a.role() != UserRole.APP_ADMIN)
+            throw new org.springframework.security.access.AccessDeniedException("APP_ADMIN required");
+    }
 }

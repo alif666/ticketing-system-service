@@ -16,14 +16,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.pridesys.ticketing.entity.UserRecord;
 import com.pridesys.ticketing.entity.UserRole;
-import com.pridesys.ticketing.repository.ResetTokenRepository;
+import com.pridesys.ticketing.repository.ResetTokenRecordRepository;
 import com.pridesys.ticketing.repository.UserRecordRepository;
 import com.pridesys.ticketing.security.util.JwtService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
     @Mock UserRecordRepository users;
-    @Mock ResetTokenRepository tokens;
+    @Mock ResetTokenRecordRepository tokens;
     @Mock PasswordEncoder encoder;
     @Mock JwtService jwt;
     @InjectMocks AuthService service;
@@ -54,7 +54,7 @@ class AuthServiceTest {
     }
 
     @Test void resetTokenMustBeUsableAndIsMarkedUsed() {
-        when(tokens.findUsable(anyString(), any(Instant.class))).thenReturn(Optional.of(new ResetTokenRepository.TokenRecord(7, 2, Instant.now().plusSeconds(30), null)));
+        when(tokens.findUsable(anyString(), any(Instant.class))).thenReturn(Optional.of(new ResetTokenRecordRepository.TokenRecord(7, 2, Instant.now().plusSeconds(30), null)));
         when(encoder.encode("NewPassword123!")).thenReturn("new-hash");
         service.resetPassword("token", "NewPassword123!");
         verify(users).updatePassword(2, "new-hash");

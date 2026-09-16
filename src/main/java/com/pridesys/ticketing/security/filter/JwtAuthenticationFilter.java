@@ -17,9 +17,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwt;
     private final UserRecordRepository users;
 
-    public JwtAuthenticationFilter(JwtService jwt, UserRecordRepository users) { this.jwt = jwt; this.users = users; }
+    public JwtAuthenticationFilter(JwtService jwt, UserRecordRepository users) {
+        this.jwt = jwt;
+        this.users = users;
+    }
 
-    @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             try {
