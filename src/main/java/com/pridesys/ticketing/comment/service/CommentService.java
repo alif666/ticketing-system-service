@@ -1,3 +1,58 @@
 package com.pridesys.ticketing.comment.service;
-import com.pridesys.ticketing.dto.*; import com.pridesys.ticketing.entity.*; import com.pridesys.ticketing.repository.*; import org.springframework.security.access.AccessDeniedException; import org.springframework.stereotype.Service;
-@Service public class CommentService { private final IssueCommentRepository comments; private final IssueRepository issues; private final ProjectRepository projects; public CommentService(IssueCommentRepository c,IssueRepository i,ProjectRepository p){comments=c;issues=i;projects=p;} public PageResponse<CommentResponseDto> list(UserEntity a,long issue,int page,int size){target(a,issue);var p=org.springframework.data.domain.PageRequest.of(Math.max(0,page),Math.min(Math.max(1,size),100));return PageResponse.of(comments.findByIssueIdOrderByCreatedAtAsc(issue,p).map(this::map));} public CommentResponseDto create(UserEntity a,long issue,CommentRequest r){target(a,issue);return map(comments.save(new IssueCommentEntity(issue,a.getId(),r.body().trim())));} public CommentResponseDto update(UserEntity a,long id,CommentRequest r){var c=comments.findById(id).orElseThrow();if(c.getAuthorId()!=a.getId()&&a.getRole()!=UserRole.APP_ADMIN)throw new AccessDeniedException("Comment edit denied");c.setBody(r.body().trim());c.setEdited(true);return map(comments.save(c));} public void delete(UserEntity a,long id){var c=comments.findById(id).orElseThrow();if(c.getAuthorId()!=a.getId()&&a.getRole()!=UserRole.APP_ADMIN)throw new AccessDeniedException("Comment delete denied");comments.delete(c);} private IssueEntity target(UserEntity a,long id){var i=issues.findById(id).orElseThrow();if(a.getRole()!=UserRole.APP_ADMIN&&!projects.member(i.getProjectId(),a.getId()))throw new AccessDeniedException("Issue access denied");return i;} private CommentResponseDto map(IssueCommentEntity c){return new CommentResponseDto(c.getId(),c.getIssueId(),c.getAuthorId(),c.getBody(),c.isEdited(),c.getCreatedAt(),c.getUpdatedAt());} }
+
+import com.pridesys.ticketing.dto.*;
+import com.pridesys.ticketing.entity.*;
+import com.pridesys.ticketing.repository.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CommentService {
+    private final IssueCommentRepository comments;
+    private final IssueRepository issues;
+    private final ProjectRepository projects;
+
+    public CommentService(IssueCommentRepository c, IssueRepository i, ProjectRepository p) {
+        comments = c;
+        issues = i;
+        projects = p;
+    }
+
+    public PageResponse<CommentResponseDto> list(UserEntity a, long issue, int page, int size) {
+        target(a, issue);
+        var p = org.springframework.data.domain.PageRequest.of(Math.max(0, page), Math.min(Math.max(1, size), 100));
+        return PageResponse.of(comments.findByIssueIdOrderByCreatedAtAsc(issue, p).map(this::map));
+    }
+
+    public CommentResponseDto create(UserEntity a, long issue, CommentRequest r) {
+        target(a, issue);
+        return map(comments.save(new IssueCommentEntity(issue, a.getId(), r.body().trim())));
+    }
+
+    public CommentResponseDto update(UserEntity a, long id, CommentRequest r) {
+        var c = comments.findById(id).orElseThrow();
+        if (c.getAuthorId() != a.getId() && a.getRole() != UserRole.APP_ADMIN)
+            throw new AccessDeniedException("Comment edit denied");
+        c.setBody(r.body().trim());
+        c.setEdited(true);
+        return map(comments.save(c));
+    }
+
+    public void delete(UserEntity a, long id) {
+        var c = comments.findById(id).orElseThrow();
+        if (c.getAuthorId() != a.getId() && a.getRole() != UserRole.APP_ADMIN)
+            throw new AccessDeniedException("Comment delete denied");
+        comments.delete(c);
+    }
+
+    private IssueEntity target(UserEntity a, long id) {
+        var i = issues.findById(id).orElseThrow();
+        if (a.getRole() != UserRole.APP_ADMIN && !projects.member(i.getProjectId(), a.getId()))
+            throw new AccessDeniedException("Issue access denied");
+        return i;
+    }
+
+    private CommentResponseDto map(IssueCommentEntity c) {
+        return new CommentResponseDto(c.getId(), c.getIssueId(), c.getAuthorId(), c.getBody(), c.isEdited(), c.getCreatedAt(), c.getUpdatedAt());
+    }
+}

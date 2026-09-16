@@ -11,15 +11,21 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.access.AccessDeniedException;
+
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
 class AttachmentServiceTest {
-    @Mock IssueAttachmentRepository attachments;
-    @Mock IssueRepository issues;
-    @Mock ProjectRepository projects;
-    @Mock FileStorage storage;
-    @InjectMocks AttachmentService service;
+    @Mock
+    IssueAttachmentRepository attachments;
+    @Mock
+    IssueRepository issues;
+    @Mock
+    ProjectRepository projects;
+    @Mock
+    FileStorage storage;
+    @InjectMocks
+    AttachmentService service;
 
     @Test
     void rejectsUnsupportedFileType() {
