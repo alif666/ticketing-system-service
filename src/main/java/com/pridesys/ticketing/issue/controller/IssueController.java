@@ -8,6 +8,7 @@ import com.pridesys.ticketing.security.util.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -15,16 +16,63 @@ import java.util.List;
 public class IssueController {
     private final IIssueService service;
     private final UserRepository users;
-    public IssueController(IIssueService service, UserRepository users){this.service=service;this.users=users;}
-    private UserEntity actor(Authentication authentication){return users.findById(((JwtService.UserPrincipal)authentication.getPrincipal()).id()).orElseThrow();}
-    @GetMapping public PageResponse<IssueResponseDto> list(Authentication a,@RequestParam long projectId,@RequestParam(defaultValue="") String q,@RequestParam(required=false) IssueStage stage,@RequestParam(required=false) IssueType type,@RequestParam(required=false) IssuePriority priority,@RequestParam(required=false) Long moduleId,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return service.list(actor(a),projectId,q,stage,type,priority,moduleId,page,size);}
-    @GetMapping("/{id}") public IssueResponseDto get(Authentication a,@PathVariable long id){return service.get(actor(a),id);}
-    @PostMapping public IssueResponseDto create(Authentication a,@Valid @RequestBody CreateIssueRequest r){return service.create(actor(a),r);}
-    @PutMapping("/{id}") public IssueResponseDto update(Authentication a,@PathVariable long id,@Valid @RequestBody UpdateIssueRequest r){return service.update(actor(a),id,r);}
-    @PostMapping("/{id}/stage") public IssueResponseDto move(Authentication a,@PathVariable long id,@RequestParam IssueStage stage){return service.move(actor(a),id,stage);}
-    @PostMapping("/{id}/verification") public IssueResponseDto requestVerification(Authentication a,@PathVariable long id){return service.requestVerification(actor(a),id);}
-    @GetMapping("/verification-queue") public List<IssueResponseDto> verificationQueue(Authentication a){return service.verificationQueue(actor(a));}
-    @PostMapping("/{id}/verification/approve") public IssueResponseDto approve(Authentication a,@PathVariable long id,@Valid @RequestBody VerificationDecisionRequest r){return service.approve(actor(a),id,r);}
-    @PostMapping("/{id}/verification/reject") public IssueResponseDto reject(Authentication a,@PathVariable long id,@Valid @RequestBody VerificationDecisionRequest r){return service.reject(actor(a),id,r);}
-    @GetMapping("/{id}/audit") public List<IssueAuditResponseDto> audit(Authentication a,@PathVariable long id){return service.audit(actor(a),id);}
+
+    public IssueController(IIssueService service, UserRepository users) {
+        this.service = service;
+        this.users = users;
+    }
+
+    private UserEntity actor(Authentication authentication) {
+        return users.findById(((JwtService.UserPrincipal) authentication.getPrincipal()).id()).orElseThrow();
+    }
+
+    @GetMapping
+    public PageResponse<IssueResponseDto> list(Authentication a, @RequestParam long projectId, @RequestParam(defaultValue = "") String q, @RequestParam(required = false) IssueStage stage, @RequestParam(required = false) IssueType type, @RequestParam(required = false) IssuePriority priority, @RequestParam(required = false) Long moduleId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return service.list(actor(a), projectId, q, stage, type, priority, moduleId, page, size);
+    }
+
+    @GetMapping("/{id}")
+    public IssueResponseDto get(Authentication a, @PathVariable long id) {
+        return service.get(actor(a), id);
+    }
+
+    @PostMapping
+    public IssueResponseDto create(Authentication a, @Valid @RequestBody CreateIssueRequest r) {
+        return service.create(actor(a), r);
+    }
+
+    @PutMapping("/{id}")
+    public IssueResponseDto update(Authentication a, @PathVariable long id, @Valid @RequestBody UpdateIssueRequest r) {
+        return service.update(actor(a), id, r);
+    }
+
+    @PostMapping("/{id}/stage")
+    public IssueResponseDto move(Authentication a, @PathVariable long id, @RequestParam IssueStage stage) {
+        return service.move(actor(a), id, stage);
+    }
+
+    @PostMapping("/{id}/verification")
+    public IssueResponseDto requestVerification(Authentication a, @PathVariable long id) {
+        return service.requestVerification(actor(a), id);
+    }
+
+    @GetMapping("/verification-queue")
+    public PageResponse<IssueResponseDto> verificationQueue(Authentication a, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return service.verificationQueue(actor(a), page, size);
+    }
+
+    @PostMapping("/{id}/verification/approve")
+    public IssueResponseDto approve(Authentication a, @PathVariable long id, @Valid @RequestBody VerificationDecisionRequest r) {
+        return service.approve(actor(a), id, r);
+    }
+
+    @PostMapping("/{id}/verification/reject")
+    public IssueResponseDto reject(Authentication a, @PathVariable long id, @Valid @RequestBody VerificationDecisionRequest r) {
+        return service.reject(actor(a), id, r);
+    }
+
+    @GetMapping("/{id}/audit")
+    public List<IssueAuditResponseDto> audit(Authentication a, @PathVariable long id) {
+        return service.audit(actor(a), id);
+    }
 }
