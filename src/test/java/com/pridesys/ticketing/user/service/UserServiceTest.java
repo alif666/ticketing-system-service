@@ -11,7 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.pridesys.ticketing.entity.*;
 import com.pridesys.ticketing.dto.CreateUserRequest;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.*;
 import com.pridesys.ticketing.user.service.impl.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,10 +20,16 @@ class UserServiceTest {
     UserRepository users;
     @Mock
     PasswordEncoder encoder;
+    @Mock
+    ProjectMembershipRepository memberships;
+    @Mock
+    ResetTokenRepository resetTokens;
+    @Mock
+    IssueRepository issues;
 
     @Test
     void clientAdminCannotCreateAppAdmin() {
-        var s = new UserServiceImpl(users, encoder);
+        var s = new UserServiceImpl(users, encoder, memberships, resetTokens, issues);
         var a = user(UserRole.CLIENT_ADMIN, 1L);
         assertThrows(AccessDeniedException.class, () -> s.create(a, new CreateUserRequest("x@test.com", "X", UserRole.APP_ADMIN, 1L)));
         verifyNoInteractions(users);
@@ -31,7 +37,7 @@ class UserServiceTest {
 
     @Test
     void clientAdminCannotManageOtherClient() {
-        var s = new UserServiceImpl(users, encoder);
+        var s = new UserServiceImpl(users, encoder, memberships, resetTokens, issues);
         var a = user(UserRole.CLIENT_ADMIN, 1L);
         when(users.findById(9L)).thenReturn(java.util.Optional.of(user(UserRole.CLIENT_USER, 2L)));
         assertThrows(AccessDeniedException.class, () -> s.deactivate(a, 9L));

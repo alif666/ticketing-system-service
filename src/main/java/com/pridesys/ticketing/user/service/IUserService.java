@@ -10,5 +10,7 @@ public interface IUserService {
 
     void deactivate(UserEntity actor, long id);
 
+    void delete(UserEntity actor, long id);
+
     ProfileResponse update(UserEntity actor, long id, UpdateUserRequest request);
 }

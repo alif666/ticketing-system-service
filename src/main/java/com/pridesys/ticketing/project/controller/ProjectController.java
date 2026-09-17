@@ -42,6 +42,12 @@ public class ProjectController {
         return Map.of("message", "Project updated");
     }
 
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(Authentication a, @PathVariable long id) {
+        service.delete(actor(a), id);
+        return Map.of("message", "Project deleted");
+    }
+
     @GetMapping("/{projectId}/members")
     public PageResponse<ProfileResponse> members(Authentication a, @PathVariable long projectId,
                                                   @RequestParam(defaultValue = "0") int page,

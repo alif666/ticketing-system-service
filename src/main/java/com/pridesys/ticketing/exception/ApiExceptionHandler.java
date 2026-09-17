@@ -26,6 +26,12 @@ public class ApiExceptionHandler {
         return Map.of("error", "CONFLICT", "message", "Resource violates a uniqueness or integrity constraint");
     }
 
+    @ExceptionHandler(ResourceConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    Map<String, String> resourceConflict(ResourceConflictException e) {
+        return Map.of("error", "CONFLICT", "message", e.getMessage());
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     Map<String, String> notFound(NoSuchElementException e) {

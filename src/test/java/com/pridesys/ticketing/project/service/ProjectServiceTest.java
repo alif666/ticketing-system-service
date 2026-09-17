@@ -3,9 +3,7 @@ package com.pridesys.ticketing.project.service;
 import com.pridesys.ticketing.entity.UserEntity;
 import com.pridesys.ticketing.entity.UserRole;
 import com.pridesys.ticketing.project.service.impl.ProjectServiceImpl;
-import com.pridesys.ticketing.repository.ProjectMembershipRepository;
-import com.pridesys.ticketing.repository.ProjectRepository;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,13 +27,15 @@ class ProjectServiceTest {
     @Mock ProjectRepository projects;
     @Mock ProjectMembershipRepository memberships;
     @Mock UserRepository users;
+    @Mock IssueRepository issues;
+    @Mock ModuleRepository modules;
 
     @Test
     void appAdminCanListProjectMembersWithoutCredentialData() {
         var member = user(UserRole.CLIENT_USER, 9L);
         when(users.findByProjectId(eq(12L), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(member)));
-        var service = new ProjectServiceImpl(projects, memberships, users);
+        var service = new ProjectServiceImpl(projects, memberships, users, issues, modules);
 
         var result = service.members(user(UserRole.APP_ADMIN, 1L), 12L, 0, 20);
 
@@ -47,7 +47,7 @@ class ProjectServiceTest {
 
     @Test
     void clientAdminCannotListProjectMembers() {
-        var service = new ProjectServiceImpl(projects, memberships, users);
+        var service = new ProjectServiceImpl(projects, memberships, users, issues, modules);
 
         assertThrows(AccessDeniedException.class,
                 () -> service.members(user(UserRole.CLIENT_ADMIN, 2L), 12L, 0, 20));

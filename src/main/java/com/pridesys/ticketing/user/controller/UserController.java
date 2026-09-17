@@ -42,6 +42,12 @@ public class UserController {
         return Map.of("message", "User deactivated");
     }
 
+    @DeleteMapping("/{id}")
+    public Map<String, String> delete(Authentication a, @PathVariable long id) {
+        service.delete(actor(a), id);
+        return Map.of("message", "User deleted");
+    }
+
     @PatchMapping("/{id}")
     public ProfileResponse update(Authentication a, @PathVariable long id, @Valid @RequestBody UpdateUserRequest r) {
         return service.update(actor(a), id, r);

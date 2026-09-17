@@ -9,6 +9,11 @@ import java.util.Collection;
 import java.util.List;
 
 public interface IssueRepository extends JpaRepository<IssueEntity, Long> {
+    boolean existsByReporterId(long reporterId);
+
+    boolean existsByProjectId(long projectId);
+
+    boolean existsByModuleId(long moduleId);
     @Query("select i from IssueEntity i where i.projectId=:project and (:q='' or lower(i.title) like lower(concat('%',:q,'%'))) and (:stage is null or i.stage=:stage) and (:type is null or i.type=:type) and (:priority is null or i.priority=:priority) and (:module is null or i.moduleId=:module)")
     Page<IssueEntity> search(@Param("project") long project, @Param("q") String q, @Param("stage") IssueStage stage, @Param("type") IssueType type, @Param("priority") IssuePriority priority, @Param("module") Long module, Pageable pageable);
 

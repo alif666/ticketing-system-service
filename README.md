@@ -60,6 +60,8 @@ The assignment requires project memberships but does not explicitly name a role 
 
 The cumulative `postman.json` collection contains requests for the new endpoints. Create a project as APP_ADMIN, add a member using `PUT /api/projects/{projectId}/members/{userId}`, then log in as that member before listing projects/modules.
 
+Deletion rules are enforced in the service layer: only APP_ADMIN can hard-delete users or projects; a user with reported issues must be deactivated instead; a project with issues cannot be deleted; and a module with issues cannot be deleted. A project without issues removes its memberships and modules transactionally before deletion. Conflicts return HTTP 409 rather than relying on database errors.
+
 ## Issues and audit
 
 The `4-issues-audit` increment adds project-scoped issue creation, search/pagination, detail, edits, stage transitions, and chronological audit records. Issue access is enforced server-side through project membership; CLIENT_USER may only move their own SUBMITTED issue to DECLINED or RESOLVED. Flyway migration `V4__issues_audit.sql` creates the issue and audit tables.

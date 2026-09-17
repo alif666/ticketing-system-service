@@ -7,15 +7,18 @@ import com.pridesys.ticketing.project.service.IProjectService;
 import com.pridesys.ticketing.module.service.IModuleService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import com.pridesys.ticketing.exception.ResourceConflictException;
 
 @Service
 public class ModuleServiceImpl implements IModuleService {
     private final ModuleRepository modules;
     private final IProjectService projects;
+    private final IssueRepository issues;
 
-    public ModuleServiceImpl(ModuleRepository m, IProjectService p) {
+    public ModuleServiceImpl(ModuleRepository m, IProjectService p, IssueRepository i) {
         modules = m;
         projects = p;
+        issues = i;
     }
 
     public PageResponse<ModuleResponseDto> list(UserEntity a, long p, int page, int size) {
@@ -43,6 +46,9 @@ public class ModuleServiceImpl implements IModuleService {
     public void delete(UserEntity a, long p, long id) {
         scope(a, p);
         canManage(a);
+        var module = modules.findById(id).orElseThrow();
+        if (module.getProjectId() != p) throw new IllegalArgumentException("Module does not belong to project");
+        if (issues.existsByModuleId(id)) throw new ResourceConflictException("Module has existing issues and cannot be deleted");
         modules.deleteById(id);
     }
 

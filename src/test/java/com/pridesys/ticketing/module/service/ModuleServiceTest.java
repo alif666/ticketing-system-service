@@ -5,6 +5,7 @@ import com.pridesys.ticketing.entity.UserEntity;
 import com.pridesys.ticketing.entity.UserRole;
 import com.pridesys.ticketing.module.service.impl.ModuleServiceImpl;
 import com.pridesys.ticketing.repository.ModuleRepository;
+import com.pridesys.ticketing.repository.IssueRepository;
 import com.pridesys.ticketing.project.service.IProjectService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ class ModuleServiceTest {
     ModuleRepository modules;
     @Mock
     IProjectService projects;
+    @Mock
+    IssueRepository issues;
     @InjectMocks
     ModuleServiceImpl service;
 

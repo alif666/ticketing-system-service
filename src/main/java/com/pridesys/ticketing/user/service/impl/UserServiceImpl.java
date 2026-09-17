@@ -2,13 +2,15 @@ package com.pridesys.ticketing.user.service.impl;
 
 import com.pridesys.ticketing.dto.*;
 import com.pridesys.ticketing.entity.*;
-import com.pridesys.ticketing.repository.UserRepository;
+import com.pridesys.ticketing.repository.*;
 import com.pridesys.ticketing.user.service.IUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.pridesys.ticketing.exception.ResourceConflictException;
 
 import java.util.*;
 
@@ -16,10 +18,16 @@ import java.util.*;
 public class UserServiceImpl implements IUserService {
     private final UserRepository users;
     private final PasswordEncoder encoder;
+    private final ProjectMembershipRepository memberships;
+    private final ResetTokenRepository resetTokens;
+    private final IssueRepository issues;
 
-    public UserServiceImpl(UserRepository u, PasswordEncoder e) {
+    public UserServiceImpl(UserRepository u, PasswordEncoder e, ProjectMembershipRepository m, ResetTokenRepository r, IssueRepository i) {
         users = u;
         encoder = e;
+        memberships = m;
+        resetTokens = r;
+        issues = i;
     }
 
     public PageResponse<ProfileResponse> list(UserEntity a, String q, int page, int size) {
@@ -49,6 +57,17 @@ public class UserServiceImpl implements IUserService {
         users.save(u);
     }
 
+    @Transactional
+    public void delete(UserEntity a, long id) {
+        requireAppAdmin(a);
+        var target = users.findById(id).orElseThrow();
+        if (issues.existsByReporterId(id))
+            throw new ResourceConflictException("User has existing issues; deactivate the user instead");
+        memberships.deleteByUserId(id);
+        resetTokens.deleteByUserId(id);
+        users.delete(target);
+    }
+
     public ProfileResponse update(UserEntity a, long id, UpdateUserRequest r) {
         admin(a);
         var u = target(a, id);
@@ -73,6 +92,10 @@ public class UserServiceImpl implements IUserService {
 
     private void admin(UserEntity a) {
         if (a.getRole() == UserRole.CLIENT_USER) throw new AccessDeniedException("Insufficient role");
+    }
+
+    private void requireAppAdmin(UserEntity a) {
+        if (a.getRole() != UserRole.APP_ADMIN) throw new AccessDeniedException("APP_ADMIN required");
     }
 
     private ProfileResponse profile(UserEntity u) {

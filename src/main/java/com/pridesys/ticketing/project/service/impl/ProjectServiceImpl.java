@@ -6,17 +6,23 @@ import com.pridesys.ticketing.repository.*;
 import com.pridesys.ticketing.project.service.IProjectService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.pridesys.ticketing.exception.ResourceConflictException;
 
 @Service
 public class ProjectServiceImpl implements IProjectService {
     private final ProjectRepository projects;
     private final ProjectMembershipRepository memberships;
     private final UserRepository users;
+    private final IssueRepository issues;
+    private final ModuleRepository modules;
 
-    public ProjectServiceImpl(ProjectRepository p, ProjectMembershipRepository m, UserRepository u) {
+    public ProjectServiceImpl(ProjectRepository p, ProjectMembershipRepository m, UserRepository u, IssueRepository i, ModuleRepository mo) {
         projects = p;
         memberships = m;
         users = u;
+        issues = i;
+        modules = mo;
     }
 
     public PageResponse<ProjectResponseDto> list(UserEntity a, int page, int size) {
@@ -37,6 +43,17 @@ public class ProjectServiceImpl implements IProjectService {
         p.setDescription(r.description());
         if (r.active() != null) p.setActive(r.active());
         projects.save(p);
+    }
+
+    @Transactional
+    public void delete(UserEntity a, long projectId) {
+        admin(a);
+        var project = projects.findById(projectId).orElseThrow();
+        if (issues.existsByProjectId(projectId))
+            throw new ResourceConflictException("Project has existing issues and cannot be deleted");
+        memberships.deleteByProjectId(projectId);
+        modules.deleteByProjectId(projectId);
+        projects.delete(project);
     }
 
     public void member(UserEntity a, long p, long u, boolean add) {

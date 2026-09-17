@@ -10,6 +10,8 @@ public interface IProjectService {
 
     void update(UserEntity actor, long id, UpdateProjectRequest request);
 
+    void delete(UserEntity actor, long projectId);
+
     void member(UserEntity actor, long projectId, long userId, boolean add);
 
     PageResponse<ProfileResponse> members(UserEntity actor, long projectId, int page, int size);
