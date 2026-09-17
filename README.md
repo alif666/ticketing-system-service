@@ -117,3 +117,13 @@ Run the complete automated suite with:
 ```bash
 docker run --rm -v "${PWD}:/workspace" -w /workspace maven:3.9.11-eclipse-temurin-21 mvn -q clean test
 ```
+
+## Future hardening scope
+
+These are deliberately recorded as follow-up improvements rather than trade-offs in the submitted implementation. The current assignment behavior remains protected by server-side authorization, validation, DTO mapping, pagination, and regression tests.
+
+- Add a JSON `AccessDeniedHandler` so framework-generated `403` responses use the same envelope as service-level authorization failures.
+- Add global handlers for malformed JSON, invalid enum/query values, path/query constraint violations, and other `400` cases.
+- Add MockMvc authorization tests covering unauthenticated `401`, role-based `403`, cross-client isolation, and deletion conflicts at the HTTP boundary.
+- Add stricter positive validation for path IDs and pagination parameters.
+- Consider pagination/filtering for secondary list views such as audit history and additional administration lists where the product grows.
