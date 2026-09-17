@@ -3,6 +3,7 @@ package com.pridesys.ticketing.security;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PathsConfigTest {
     private final PathsConfig paths = new PathsConfig();
@@ -21,6 +22,7 @@ class PathsConfigTest {
         assertTrue(paths.appAdminPaths().contains("/api/clients/**"));
         assertTrue(paths.clientAdminPaths().contains("/api/users/**"));
         assertTrue(paths.clientAdminPaths().contains("/api/issues/verification-queue"));
+        assertFalse(paths.clientAdminPaths().contains("/api/projects/*/modules/**"));
         assertTrue(paths.clientAdminModuleWritePaths().contains("/api/projects/*/modules/**"));
     }
 

@@ -57,6 +57,17 @@ class ModuleServiceTest {
         verifyNoInteractions(modules);
     }
 
+    @Test
+    void clientUserCannotUpdateOrDeleteModules() {
+        var actor = user(UserRole.CLIENT_USER, 7L);
+        when(projects.hasAccess(actor, 12L)).thenReturn(true);
+
+        assertThrows(AccessDeniedException.class, () -> service.update(actor, 12L, 3L,
+                new com.pridesys.ticketing.dto.UpdateModuleRequest("Portal", "Support portal", true)));
+        assertThrows(AccessDeniedException.class, () -> service.delete(actor, 12L, 3L));
+        verifyNoInteractions(modules);
+    }
+
     private UserEntity user(UserRole role, long id) {
         var user = new UserEntity("user@test.com", "hash", role, "User", 1L);
         user.setId(id);
