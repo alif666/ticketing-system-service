@@ -15,7 +15,7 @@ From this repository:
 docker compose up --build
 ```
 
-The API is available at `http://localhost:8080`. The frontend is intentionally not part of this increment; it will be added when the client repository is ready.
+The API is available at `http://localhost:8080`. The frontend is maintained in the separate client repository; this compose stack starts the service, MySQL, and private attachment storage dependencies.
 
 For IntelliJ development, start only the database in the background and then run the Spring Boot configuration from IntelliJ:
 
