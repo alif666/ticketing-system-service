@@ -54,6 +54,10 @@ Stop with `Ctrl+C`. A later `docker compose up` reuses the volumes. Do not use `
 
 The `3-users-projects` increment adds protected `/api/users`, `/api/clients`, `/api/projects`, and nested `/api/projects/{id}/modules` endpoints. APP_ADMIN manages clients/projects/memberships and all users. CLIENT_ADMIN can manage users in its own client (except APP_ADMIN) and modules in assigned projects. CLIENT_USER is read-only for this administration area: an authenticated project member may list that project’s modules, but cannot create, edit, or delete them. Module write requests are restricted at both the HTTP path and service layers. Projects are visible to client roles only through `project_memberships`. Use the seeded APP_ADMIN account to create a project, add the seeded client users as members, and then verify scoped access with the client login. Flyway migration `V3__users_projects.sql` creates the client, membership, project, and module tables and associates the seeded client users with Acme Corporation.
 
+### Membership authorization assumption
+
+The assignment requires project memberships but does not explicitly name a role for assigning them. Because `CLIENT_ADMIN` is explicitly prohibited from managing app-level data (including projects), this implementation treats project membership administration as an `APP_ADMIN` responsibility. `APP_ADMIN` may add or remove both `CLIENT_ADMIN` and `CLIENT_USER` accounts from projects; client roles may only consume access granted through those memberships. This interpretation preserves the stated role hierarchy and is enforced server-side.
+
 The cumulative `postman.json` collection contains requests for the new endpoints. Create a project as APP_ADMIN, add a member using `PUT /api/projects/{projectId}/members/{userId}`, then log in as that member before listing projects/modules.
 
 ## Issues and audit
