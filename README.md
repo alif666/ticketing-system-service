@@ -91,3 +91,25 @@ Seed accounts:
 | `client.user@example.com` | CLIENT_USER | `Password123!` |
 
 Reset tokens are logged by the API with the `[DEV PASSWORD RESET]` prefix. In production, the token must be delivered through an email provider instead of logs.
+
+## Final submission verification
+
+Start the complete backend environment with:
+
+```bash
+docker compose up --build
+```
+
+Before submission, verify the seeded role matrix and project-membership boundaries:
+
+1. Log in as `app.admin@example.com`; create or select a project, list its members, and add/remove a `CLIENT_ADMIN` or `CLIENT_USER` through the project-membership endpoints.
+2. Log in as the assigned client account and confirm only projects granted through memberships are visible.
+3. Confirm a client role receives `403` for project creation and membership administration, while an authenticated project member can read permitted modules and issues.
+4. Exercise issue creation, filters/pagination, stage transitions, comments, attachments, verification approval/rejection, and audit history.
+5. Confirm inactive users cannot log in and reset tokens are single-use and expiring.
+
+Run the complete automated suite with:
+
+```bash
+docker run --rm -v "${PWD}:/workspace" -w /workspace maven:3.9.11-eclipse-temurin-21 mvn -q clean test
+```
