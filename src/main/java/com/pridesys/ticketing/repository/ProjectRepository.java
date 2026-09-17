@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.*;
 import java.util.*;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
+    Optional<ProjectEntity> findByShortCode(String shortCode);
     @Query("select p from ProjectEntity p join ProjectMembershipEntity m on m.projectId=p.id where m.userId=:user")
     org.springframework.data.domain.Page<ProjectEntity> forUser(@org.springframework.data.repository.query.Param("user") long user, org.springframework.data.domain.Pageable pageable);
 

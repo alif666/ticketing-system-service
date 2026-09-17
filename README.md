@@ -90,6 +90,8 @@ Seed accounts:
 | `client.admin@example.com` | CLIENT_ADMIN | `Password123!` |
 | `client.user@example.com` | CLIENT_USER | `Password123!` |
 
+When `APP_SEED_ENABLED` is enabled (the default), startup also idempotently creates the `Customer Support Portal` demo project (`DEMO`), its `Authentication & Access` and `Ticket Submission` modules, and memberships for the seeded client admin and client user. Existing records are detected by their stable short code/name or membership key and are not duplicated on restart. Additional issue/comment/attachment records used for pagination demos are intentionally not part of the baseline seed.
+
 Reset tokens are logged by the API with the `[DEV PASSWORD RESET]` prefix. In production, the token must be delivered through an email provider instead of logs.
 
 ## Final submission verification
