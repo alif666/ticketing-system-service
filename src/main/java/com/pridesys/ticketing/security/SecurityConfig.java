@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +34,7 @@ public class SecurityConfig {
             @Qualifier("publicPaths") List<String> publicPaths,
             @Qualifier("appAdminPaths") List<String> appAdminPaths,
             @Qualifier("clientAdminPaths") List<String> clientAdminPaths,
+            @Qualifier("clientAdminModuleWritePaths") List<String> clientAdminModuleWritePaths,
             @Qualifier("securedPaths") List<String> securedPaths) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         return http.csrf(csrf -> csrf.disable()).cors(cors -> {
@@ -43,6 +45,14 @@ public class SecurityConfig {
                     appAdminPaths.forEach(path -> auth.requestMatchers(path).hasRole("APP_ADMIN"));
                     clientAdminPaths.forEach(path -> auth.requestMatchers(path)
                             .hasAnyRole("APP_ADMIN", "CLIENT_ADMIN"));
+                    clientAdminModuleWritePaths.forEach(path -> {
+                        auth.requestMatchers(HttpMethod.POST, path)
+                                .hasAnyRole("APP_ADMIN", "CLIENT_ADMIN");
+                        auth.requestMatchers(HttpMethod.PATCH, path)
+                                .hasAnyRole("APP_ADMIN", "CLIENT_ADMIN");
+                        auth.requestMatchers(HttpMethod.DELETE, path)
+                                .hasAnyRole("APP_ADMIN", "CLIENT_ADMIN");
+                    });
                     securedPaths.forEach(path -> auth.requestMatchers(path).authenticated());
                     auth.anyRequest().denyAll();
                 })

@@ -20,8 +20,8 @@ class PathsConfigTest {
     void assignsAdministrativeRoutesToExpectedRoleGroups() {
         assertTrue(paths.appAdminPaths().contains("/api/clients/**"));
         assertTrue(paths.clientAdminPaths().contains("/api/users/**"));
-        assertTrue(paths.clientAdminPaths().contains("/api/projects/*/modules/**"));
         assertTrue(paths.clientAdminPaths().contains("/api/issues/verification-queue"));
+        assertTrue(paths.clientAdminModuleWritePaths().contains("/api/projects/*/modules/**"));
     }
 
     @Test

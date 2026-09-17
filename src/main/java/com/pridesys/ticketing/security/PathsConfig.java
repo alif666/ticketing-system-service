@@ -28,11 +28,15 @@ public class PathsConfig {
     public List<String> clientAdminPaths() {
         return List.of(
                 "/api/users/**",
-                "/api/projects/*/modules/**",
                 "/api/issues/verification-queue",
                 "/api/issues/*/verification/approve",
                 "/api/issues/*/verification/reject"
         );
+    }
+
+    @Bean(name = "clientAdminModuleWritePaths")
+    public List<String> clientAdminModuleWritePaths() {
+        return List.of("/api/projects/*/modules/**");
     }
 
     @Bean(name = "securedPaths")

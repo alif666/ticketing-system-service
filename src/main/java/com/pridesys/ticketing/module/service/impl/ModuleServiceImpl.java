@@ -26,11 +26,13 @@ public class ModuleServiceImpl implements IModuleService {
 
     public ModuleResponseDto create(UserEntity a, long p, CreateModuleRequest r) {
         scope(a, p);
+        canManage(a);
         return map(modules.save(new ModuleEntity(p, r.name().trim(), r.description())));
     }
 
     public void update(UserEntity a, long p, long id, UpdateModuleRequest r) {
         scope(a, p);
+        canManage(a);
         var m = modules.findById(id).orElseThrow();
         m.setName(r.name().trim());
         m.setDescription(r.description());
@@ -40,7 +42,13 @@ public class ModuleServiceImpl implements IModuleService {
 
     public void delete(UserEntity a, long p, long id) {
         scope(a, p);
+        canManage(a);
         modules.deleteById(id);
+    }
+
+    private void canManage(UserEntity a) {
+        if (a.getRole() != UserRole.APP_ADMIN && a.getRole() != UserRole.CLIENT_ADMIN)
+            throw new AccessDeniedException("Module management denied");
     }
 
     private void scope(UserEntity a, long p) {
