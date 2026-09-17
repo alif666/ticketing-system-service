@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 public class ProjectServiceImpl implements IProjectService {
     private final ProjectRepository projects;
     private final ProjectMembershipRepository memberships;
+    private final UserRepository users;
 
-    public ProjectServiceImpl(ProjectRepository p, ProjectMembershipRepository m) {
+    public ProjectServiceImpl(ProjectRepository p, ProjectMembershipRepository m, UserRepository u) {
         projects = p;
         memberships = m;
+        users = u;
     }
 
     public PageResponse<ProjectResponseDto> list(UserEntity a, int page, int size) {
@@ -44,6 +46,12 @@ public class ProjectServiceImpl implements IProjectService {
         else memberships.deleteById(id);
     }
 
+    public PageResponse<ProfileResponse> members(UserEntity a, long projectId, int page, int size) {
+        admin(a);
+        var pageable = org.springframework.data.domain.PageRequest.of(Math.max(0, page), Math.min(Math.max(1, size), 100));
+        return PageResponse.of(users.findByProjectId(projectId, pageable).map(this::profile));
+    }
+
     public boolean hasAccess(UserEntity a, long p) {
         return a.getRole() == UserRole.APP_ADMIN || projects.member(p, a.getId());
     }
@@ -54,5 +62,9 @@ public class ProjectServiceImpl implements IProjectService {
 
     private ProjectResponseDto map(ProjectEntity p) {
         return new ProjectResponseDto(p.getId(), p.getName(), p.getShortCode(), p.getDescription(), p.isActive());
+    }
+
+    private ProfileResponse profile(UserEntity u) {
+        return new ProfileResponse(u.getId(), u.getEmail(), u.getRole().name(), u.getName(), u.getMobile(), u.getDesignation(), u.getOffice(), u.isActive());
     }
 }

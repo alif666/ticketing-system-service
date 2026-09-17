@@ -12,5 +12,7 @@ public interface IProjectService {
 
     void member(UserEntity actor, long projectId, long userId, boolean add);
 
+    PageResponse<ProfileResponse> members(UserEntity actor, long projectId, int page, int size);
+
     boolean hasAccess(UserEntity actor, long projectId);
 }

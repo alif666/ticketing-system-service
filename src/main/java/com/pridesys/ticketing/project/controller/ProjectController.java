@@ -42,6 +42,13 @@ public class ProjectController {
         return Map.of("message", "Project updated");
     }
 
+    @GetMapping("/{projectId}/members")
+    public PageResponse<ProfileResponse> members(Authentication a, @PathVariable long projectId,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "20") int size) {
+        return service.members(actor(a), projectId, page, size);
+    }
+
     @PutMapping("/{projectId}/members/{userId}")
     public Map<String, String> add(Authentication a, @PathVariable long projectId, @PathVariable long userId) {
         service.member(actor(a), projectId, userId, true);
