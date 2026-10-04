@@ -118,6 +118,192 @@ Run the complete automated suite with:
 docker run --rm -v "${PWD}:/workspace" -w /workspace maven:3.9.11-eclipse-temurin-21 mvn -q clean test
 ```
 
+## Relationships
+The main relationship is:
+
+```
+Client
+  └── Users
+  └── Projects
+        └── Modules
+        └── Issues
+              ├── Reporter/User
+              ├── Comments
+              ├── Attachments
+              └── Audit records
+```
+
+## User and Client
+
+A user belongs to a client organization through `users.client_id`.
+
+```
+Client 1 ──── * User
+```
+
+Roles include:
+
+```
+APP_ADMIN
+CLIENT_ADMIN
+CLIENT_USER
+```
+
+`APP_ADMIN` is global and is not restricted to one client.
+
+## User and Project
+
+Users access projects through the membership table:
+
+```
+User * ──── * Project
+```
+
+This many-to-many relationship is represented by:
+
+```
+ProjectMembershipEntity
+```
+
+It contains relationships similar to:
+
+```
+user_id
+project_id
+```
+
+The membership query checks whether a user can access a project:
+
+```
+count(m) > 0
+```
+
+So a client user only sees projects where a membership exists.
+
+## Project and Module
+
+A project can contain many modules:
+
+```
+Project 1 ──── * Module
+```
+
+Each module belongs to exactly one project.
+
+Example:
+
+```
+Customer Support Portal
+  ├── Authentication & Access
+  └── Ticket Submission
+```
+
+## Project and Issue
+
+A project can contain many issues:
+
+```
+Project 1 ──── * Issue
+```
+
+Every issue must have a project:
+
+```
+project_id NOT NULL
+```
+
+An issue may optionally belong to a module:
+
+```
+Module 1 ──── * Issue
+```
+
+That is why the service checks that the module belongs to the selected project.
+
+## User and Issue
+
+A user reports issues:
+
+```
+User 1 ──── * Issue
+```
+
+The issue stores:
+
+```
+reporter_id
+```
+
+This is used for ownership rules. For example, a `CLIENT_USER` may edit or move only their own issue in certain situations.
+
+## Other entities
+
+Your project also contains:
+
+### `IssueAuditEntity`
+
+Tracks changes to an issue:
+
+```
+Issue 1 ──── * IssueAudit
+User 1 ──── * IssueAudit
+```
+
+It stores:
+
+- Issue ID
+- Actor/user ID
+- Action
+- Field name
+- Old value
+- New value
+- Timestamp
+
+### `IssueCommentEntity`
+
+Stores comments on issues:
+
+```
+Issue 1 ──── * Comment
+User 1 ──── * Comment
+```
+
+The user ID identifies the comment author.
+
+### `IssueAttachmentEntity`
+
+Stores attachment metadata:
+
+```
+Issue 1 ──── * Attachment
+User 1 ──── * Attachment
+```
+
+The file itself is stored in the filesystem volume, while MySQL stores:
+
+- Original filename
+- Storage key
+- MIME type
+- Size
+- Uploader ID
+- Issue ID
+
+### `ResetTokenEntity`
+
+Used for password reset:
+
+```
+User 1 ──── * ResetToken
+```
+
+It stores the hashed reset token, expiry time, and used time.
+
+## Interview summary
+
+> “Users belong to client organizations and access projects through a many-to-many membership relationship. Projects contain modules and issues. Every issue belongs to a project, may optionally belong to a module, and has a reporter. Comments, attachments, and audit records are all issue-scoped and also reference users for ownership and traceability. Reset tokens are associated with users for password recovery.”
+
+
+
 ## Future hardening scope
 
 These are deliberately recorded as follow-up improvements rather than trade-offs in the submitted implementation. The current assignment behavior remains protected by server-side authorization, validation, DTO mapping, pagination, and regression tests.
@@ -127,3 +313,6 @@ These are deliberately recorded as follow-up improvements rather than trade-offs
 - Add MockMvc authorization tests covering unauthenticated `401`, role-based `403`, cross-client isolation, and deletion conflicts at the HTTP boundary.
 - Add stricter positive validation for path IDs and pagination parameters.
 - Consider pagination/filtering for secondary list views such as audit history and additional administration lists where the product grows.
+
+
+# codex resume 01a0fd6c-92fa-7c11-805b-6e9d99598458
